@@ -1,0 +1,155 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
+body {
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #fff;
+  color: #000;
+  line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+header {
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 20px 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Navigation */
+.nav-menu {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-menu li {
+  margin: 0 15px;
+}
+
+.nav-menu li a {
+  text-decoration: none;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-menu li a:hover,
+.nav-menu li a.active {
+  color: #ccc;
+  transform: translateY(-3px);
+}
+
+/* Main Content */
+main {
+  margin-top: 100px; /* account for fixed header */
+  padding: 40px 0;
+  transition: transform 0.3s ease;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 60px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+/* Button */
+.button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+  background-color: #333;
+  transform: translateY(-3px);
+}
+
+/* Footer */
+footer {
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-menu {
+    flex-direction: column;
+  }
+  .nav-menu li {
+    margin: 10px 0;
+  }
+  header h1 {
+    font-size: 1.8rem;
+  }
+  .hero h2 {
+    font-size: 2rem;
+  }
+}
