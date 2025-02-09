@@ -1,84 +1,96 @@
-/* Reset */
+/* Import the Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* ========================================================================
+   Reset & Base Styles
+   ======================================================================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body */
 body {
-  font-family: 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: #fff;
   color: #000;
   line-height: 1.6;
+  font-size: 16px;
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Container */
+/* ========================================================================
+   Container
+   ======================================================================== */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Header */
+/* ========================================================================
+   Header & Navigation
+   ======================================================================== */
 header {
   width: 100%;
-  background-color: #000;
-  color: #fff;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px 0;
+  z-index: 100;
   transition: all 0.3s ease-in-out;
 }
 
 .header-container {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 header h1 {
   font-size: 2rem;
-  margin-bottom: 10px;
-  transition: transform 0.3s ease-in-out;
+  letter-spacing: 0.05em;
 }
 
-/* Navigation */
 .nav-menu {
   list-style: none;
   display: flex;
-  justify-content: center;
+  align-items: center;
 }
 
 .nav-menu li {
-  margin: 0 15px;
+  margin-left: 20px;
 }
 
 .nav-menu li a {
   text-decoration: none;
-  color: #fff;
+  color: #000;
+  font-weight: 500;
   text-transform: uppercase;
-  font-weight: bold;
+  letter-spacing: 0.05em;
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .nav-menu li a:hover,
 .nav-menu li a.active {
-  color: #ccc;
-  transform: translateY(-3px);
+  color: #555;
+  transform: translateY(-2px);
 }
 
-/* Main Content */
+/* ========================================================================
+   Main Content & Sections
+   ======================================================================== */
 main {
-  margin-top: 100px; /* account for fixed header */
-  padding: 40px 0;
+  margin-top: 120px; /* Provide space for the fixed header */
+  padding: 40px 20px;
   transition: transform 0.3s ease;
 }
 
-/* Sections */
 .section {
   margin-bottom: 60px;
   opacity: 0;
@@ -93,11 +105,23 @@ main {
   }
 }
 
-/* Hero Section */
+h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+/* ========================================================================
+   Hero Section
+   ======================================================================== */
 .hero {
   text-align: center;
-  padding: 60px 20px;
-  border-bottom: 1px solid #ccc;
+  padding: 80px 20px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .hero h2 {
@@ -110,46 +134,54 @@ main {
   margin-bottom: 30px;
 }
 
-/* Button */
+/* ========================================================================
+   Buttons
+   ======================================================================== */
 .button {
+  display: inline-block;
   padding: 12px 30px;
   font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: #fff;
   background-color: #000;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  text-transform: uppercase;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .button:hover {
   background-color: #333;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
-/* Footer */
+/* ========================================================================
+   Footer
+   ======================================================================== */
 footer {
   width: 100%;
-  background-color: #000;
-  color: #fff;
+  background-color: #fff;
+  color: #000;
   text-align: center;
   padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
   margin-top: 40px;
 }
 
-/* Responsive */
+/* ========================================================================
+   Responsive Adjustments
+   ======================================================================== */
 @media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .nav-menu {
     flex-direction: column;
+    margin-top: 10px;
   }
   .nav-menu li {
     margin: 10px 0;
-  }
-  header h1 {
-    font-size: 1.8rem;
-  }
-  .hero h2 {
-    font-size: 2rem;
   }
 }
