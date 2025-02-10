@@ -10,10 +10,32 @@
   box-sizing: border-box;
 }
 
+:root {
+  --background-color: #fff;
+  --text-color: #000;
+  --nav-bg: rgba(255, 255, 255, 0.8);
+  --nav-text: #000;
+  --section-bg: rgba(0, 0, 0, 0.05);
+  --button-bg: #000;
+  --button-text: #fff;
+  --border-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode {
+  --background-color: #000;
+  --text-color: #fff;
+  --nav-bg: rgba(0, 0, 0, 0.8);
+  --nav-text: #fff;
+  --section-bg: rgba(255, 255, 255, 0.05);
+  --button-bg: #fff;
+  --button-text: #000;
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #000;
-  color: #fff;
+  background-color: var(--background-color);
+  color: var(--text-color);
   line-height: 1.6;
   font-size: 16px;
   transition: background-color 0.3s, color 0.3s;
@@ -36,9 +58,9 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--nav-bg);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px var(--border-color);
   padding: 16px 0;
   z-index: 100;
   transition: all 0.3s ease-in-out;
@@ -57,7 +79,7 @@ header h1 {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #fff;
+  color: var(--nav-text);
 }
 
 .nav-menu {
@@ -72,7 +94,7 @@ header h1 {
 
 .nav-menu li a {
   text-decoration: none;
-  color: #bbb;
+  color: var(--nav-text);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -83,9 +105,25 @@ header h1 {
 
 .nav-menu li a:hover,
 .nav-menu li a.active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  background: var(--section-bg);
   transform: translateY(-2px);
+}
+
+/* Theme Switcher Button */
+.theme-switch {
+  cursor: pointer;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+.theme-switch:hover {
+  opacity: 0.8;
 }
 
 /* ========================================================================
@@ -102,7 +140,7 @@ main {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.5s forwards;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--section-bg);
   padding: 32px;
   border-radius: 16px;
 }
@@ -123,63 +161,7 @@ h2 {
 p {
   margin-bottom: 20px;
   font-size: 1.1rem;
-  color: #ccc;
-}
-
-/* ========================================================================
-   Hero Section
-   ======================================================================== */
-.hero {
-  text-align: center;
-  padding: 100px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.hero h2 {
-  font-size: 2.8rem;
-  margin-bottom: 20px;
-  font-weight: 700;
-}
-
-.hero p {
-  font-size: 1.4rem;
-  margin-bottom: 30px;
-}
-
-/* ========================================================================
-   Buttons
-   ======================================================================== */
-.button {
-  display: inline-block;
-  padding: 14px 32px;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #000;
-  background-color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  font-weight: 700;
-}
-
-.button:hover {
-  background-color: #ddd;
-  transform: translateY(-2px);
-}
-
-/* ========================================================================
-   Footer
-   ======================================================================== */
-footer {
-  width: 100%;
-  background-color: #000;
-  color: #bbb;
-  text-align: center;
-  padding: 24px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 40px;
+  color: var(--text-color);
 }
 
 /* ========================================================================
