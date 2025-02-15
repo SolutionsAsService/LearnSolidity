@@ -13,19 +13,19 @@
 :root {
   --background-color: #fff;
   --text-color: #000;
-  --nav-bg: rgba(255, 255, 255, 0.8);
+  --nav-bg: rgba(255, 255, 255, 0.9);
   --nav-text: #000;
   --section-bg: rgba(0, 0, 0, 0.05);
   --button-bg: #000;
   --button-text: #fff;
   --border-color: rgba(0, 0, 0, 0.1);
-  --header-height: 80px; /* Reduced header height for better alignment */
+  --header-height: 80px;
 }
 
 .dark-mode {
   --background-color: #000;
   --text-color: #fff;
-  --nav-bg: rgba(0, 0, 0, 0.8);
+  --nav-bg: rgba(0, 0, 0, 0.9);
   --nav-text: #fff;
   --section-bg: rgba(255, 255, 255, 0.05);
   --button-bg: #fff;
@@ -43,15 +43,6 @@ body {
 }
 
 /* ========================================================================
-   Container
-   ======================================================================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* ========================================================================
    Header & Navigation
    ======================================================================== */
 header {
@@ -66,31 +57,31 @@ header {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Ensures proper spacing */
   padding: 0 24px;
-  transition: all 0.3s ease-in-out;
 }
 
-header h1 {
+.header-container {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Page Title (Now Clearly Left of the Nav) */
+.header-title {
   font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--nav-text);
-  margin: 0; /* Removes any extra margin */
-  flex-shrink: 0; /* Prevents text from shrinking */
+  margin-right: auto; /* Pushes navigation to the right */
 }
 
-nav {
-  flex: 1;
-  text-align: right;
-}
-
+/* Navigation */
 .nav-menu {
   list-style: none;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 16px;
+  gap: 20px;
 }
 
 .nav-menu li a,
@@ -132,7 +123,6 @@ nav {
    Main Content & Sections
    ======================================================================== */
 main {
-  /* Ensure main content starts below the fixed header */
   margin-top: var(--header-height);
   padding: 48px 24px;
   transition: transform 0.3s ease;
@@ -177,9 +167,14 @@ p {
     align-items: flex-start;
     padding: 16px;
   }
-  
+
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   nav {
-    text-align: left;
     width: 100%;
     margin-top: 10px;
   }
@@ -187,15 +182,9 @@ p {
   .nav-menu {
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 10px;
   }
-  
+
   .nav-menu li {
     margin: 10px 0;
-  }
-  
-  main {
-    margin-top: auto;
-    padding-top: 100px; /* Additional padding to accommodate dynamic header height on mobile */
   }
 }
