@@ -19,7 +19,7 @@
   --button-bg: #000;
   --button-text: #fff;
   --border-color: rgba(0, 0, 0, 0.1);
-  --header-height: 100px; /* Define a consistent header height */
+  --header-height: 80px; /* Reduced header height for better alignment */
 }
 
 .dark-mode {
@@ -66,20 +66,23 @@ header {
   z-index: 100;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Ensures proper spacing */
   padding: 0 24px;
   transition: all 0.3s ease-in-out;
 }
 
 header h1 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--nav-text);
-  margin-right: 32px;
+  margin: 0; /* Removes any extra margin */
+  flex-shrink: 0; /* Prevents text from shrinking */
 }
 
 nav {
   flex: 1;
+  text-align: right;
 }
 
 .nav-menu {
@@ -171,11 +174,19 @@ p {
   header {
     flex-direction: column;
     height: auto;
+    align-items: flex-start;
     padding: 16px;
   }
   
+  nav {
+    text-align: left;
+    width: 100%;
+    margin-top: 10px;
+  }
+
   .nav-menu {
     flex-direction: column;
+    align-items: flex-start;
     margin-top: 10px;
   }
   
@@ -185,6 +196,6 @@ p {
   
   main {
     margin-top: auto;
-    padding-top: 120px; /* Additional padding to accommodate dynamic header height on mobile */
+    padding-top: 100px; /* Additional padding to accommodate dynamic header height on mobile */
   }
 }
