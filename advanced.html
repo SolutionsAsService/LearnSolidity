@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solidity Learning Hub - Advanced Topics</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-container">
+      <h1>Solidity Learning Hub - Advanced</h1>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="beginner.html">Beginners</a></li>
+          <li><a href="advanced.html" class="active">Advanced</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <main>
+    <div class="container content-container">
+      <section class="section" id="intro">
+        <h2>Advanced Solidity Concepts</h2>
+        <p>Explore Solidity’s advanced features to create efficient, secure, and scalable smart contracts.</p>
+      </section>
+
+      <section class="section" id="inheritance">
+        <h3>Inheritance and Abstract Contracts</h3>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+abstract contract Base {
+    function someFunction() public virtual;
+}
+contract Derived is Base {
+    function someFunction() public override {
+        // Implementation
+    }
+}
+        </code></pre>
+      </section>
+
+      <section class="section" id="modifiers">
+        <h3>Function Modifiers and Custom Errors</h3>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract Secure {
+    address owner;
+    error NotAuthorized();
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert NotAuthorized();
+        _;
+    }
+}
+        </code></pre>
+      </section>
+
+      <section class="section" id="libraries">
+        <h3>Libraries and Interfaces</h3>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+library MathLib {
+    function add(uint a, uint b) internal pure returns (uint) {
+        return a + b;
+    }
+}
+interface ICounter {
+    function increment() external;
+    function getCount() external view returns (uint);
+}
+        </code></pre>
+      </section>
+
+      <section class="section" id="contract-interaction">
+        <h3>Contract Interactions and Oracles</h3>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+interface IPriceFeed {
+    function getLatestPrice() external view returns (int);
+}
+contract PriceConsumer {
+    IPriceFeed priceFeed;
+    constructor(address feedAddress) {
+        priceFeed = IPriceFeed(feedAddress);
+    }
+    function getPrice() public view returns (int) {
+        return priceFeed.getLatestPrice();
+    }
+}
+        </code></pre>
+      </section>
+
+      <section class="section" id="security">
+        <h3>Security Best Practices</h3>
+        <ul>
+          <li>Use Checks-Effects-Interactions pattern.</li>
+          <li>Apply reentrancy guards.</li>
+          <li>Implement circuit breakers.</li>
+          <li>Conduct regular audits.</li>
+        </ul>
+        <pre><code class="solidity">
+// Reentrancy Guard
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract ReentrancyGuard {
+    bool private locked;
+    modifier noReentrancy() {
+        require(!locked, "Reentrant call detected!");
+        locked = true;
+        _;
+        locked = false;
+    }
+}
+        </code></pre>
+      </section>
+
+      <section class="section" id="conclusion">
+        <h3>Conclusion</h3>
+        <p>Mastering Solidity’s advanced topics ensures you develop robust and efficient smart contracts.</p>
+      </section>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
