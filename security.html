@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solidity Security Best Practices</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Code syntax highlighting (handled by external JS/CSS files) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-container">
+      <h1>Solidity Security Best Practices</h1>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="beginner.html">Beginners</a></li>
+          <li><a href="advanced.html">Advanced</a></li>
+          <li><a href="security.html" class="active">Security</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <main>
+    <div class="container content-container">
+      <!-- Introduction -->
+      <section class="section" id="introduction">
+        <h2>Introduction</h2>
+        <p>Solidity is a powerful language for writing smart contracts, but with that power comes responsibility. In this guide, we explore the relationship between Solidity and security, detailing common vulnerabilities, best practices, and code examples to help you develop robust and secure smart contracts.</p>
+      </section>
+      
+      <!-- Common Vulnerabilities -->
+      <section class="section" id="common-vulnerabilities">
+        <h3>Common Vulnerabilities in Solidity</h3>
+        <p>Some of the most common vulnerabilities in Solidity smart contracts include:</p>
+        <ul>
+          <li><strong>Reentrancy:</strong> Occurs when a contract makes an external call to another untrusted contract before it resolves its state changes.</li>
+          <li><strong>Integer Overflows/Underflows:</strong> Can happen when arithmetic operations exceed the maximum or minimum value representable.</li>
+          <li><strong>Unchecked Call Return Values:</strong> Failing to verify the success of external calls can lead to unexpected behavior.</li>
+          <li><strong>Access Control Issues:</strong> Improper implementation of function access can allow unauthorized users to perform sensitive operations.</li>
+          <li><strong>Denial of Service (DoS):</strong> Malicious actors might block functions by causing excessive gas usage or other failures.</li>
+        </ul>
+      </section>
+      
+      <!-- Reentrancy and Mitigation -->
+      <section class="section" id="reentrancy">
+        <h3>Reentrancy and Its Mitigation</h3>
+        <p>The reentrancy vulnerability can be dangerous when external calls are made before state updates. The <strong>Checks-Effects-Interactions</strong> pattern is essential to prevent this.</p>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract VulnerableContract {
+    mapping(address => uint256) public balances;
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        // Interaction before state update (vulnerable to reentrancy)
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+
+contract SecureContract {
+    mapping(address => uint256) public balances;
+    bool private locked;
+
+    modifier noReentrancy() {
+        require(!locked, "Reentrant call detected!");
+        locked = true;
+        _;
+        locked = false;
+    }
+
+    function withdraw(uint256 amount) public noReentrancy {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        // Update state before interaction
+        balances[msg.sender] -= amount;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+}
+        </code></pre>
+        <p>In the secure contract, the state is updated before the external call, and a reentrancy guard is applied to prevent multiple simultaneous entries.</p>
+      </section>
+      
+      <!-- Integer Overflow/Underflow -->
+      <section class="section" id="integer-overflow">
+        <h3>Integer Overflows and Underflows</h3>
+        <p>Although Solidity 0.8.0 and later include built-in overflow and underflow protection, it's important to be aware of these issues, especially when using earlier versions or performing complex arithmetic.</p>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SafeMathExample {
+    // Solidity 0.8.0+ automatically checks for overflow/underflow.
+    function add(uint256 a, uint256 b) public pure returns (uint256) {
+        return a + b;
+    }
+}
+        </code></pre>
+        <p>For earlier Solidity versions, consider using the OpenZeppelin SafeMath library to safely handle arithmetic operations.</p>
+      </section>
+      
+      <!-- Access Control -->
+      <section class="section" id="access-control">
+        <h3>Access Control</h3>
+        <p>Proper access control ensures that only authorized users can execute sensitive functions. The following example demonstrates using a modifier to enforce ownership restrictions.</p>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Ownable {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the owner");
+        _;
+    }
+
+    function sensitiveOperation() public onlyOwner {
+        // Code that only the owner can execute
+    }
+}
+        </code></pre>
+        <p>Enhancing access control by using well-audited libraries (such as OpenZeppelin's Ownable) further strengthens contract security.</p>
+      </section>
+      
+      <!-- External Calls and Fallbacks -->
+      <section class="section" id="external-calls">
+        <h3>Handling External Calls and Fallbacks</h3>
+        <p>When calling external contracts, always check for success and handle failures gracefully. Avoid assuming that an external call will always succeed.</p>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ExternalCaller {
+    function callExternal(address target, bytes memory data) public returns (bool) {
+        (bool success, ) = target.call(data);
+        require(success, "External call failed");
+        return success;
+    }
+}
+        </code></pre>
+        <p>Additionally, define fallback and receive functions to properly manage incoming transactions.</p>
+      </section>
+      
+      <!-- Upgradable Contracts and Security -->
+      <section class="section" id="upgradable-contracts">
+        <h3>Upgradable Contracts and Security Considerations</h3>
+        <p>Upgradeable contracts allow you to modify contract logic without losing state, but they introduce security challenges. Key points include:</p>
+        <ul>
+          <li>Use proxy patterns carefully to separate storage from logic.</li>
+          <li>Maintain strict access control on upgrade functions.</li>
+          <li>Perform thorough testing and audits during upgrades.</li>
+        </ul>
+        <pre><code class="solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract LogicContract {
+    uint256 public data;
+    function setData(uint256 _data) public {
+        data = _data;
+    }
+}
+
+contract Proxy {
+    address public implementation;
+    address public admin;
+
+    constructor(address _implementation) {
+        implementation = _implementation;
+        admin = msg.sender;
+    }
+
+    function upgrade(address newImplementation) public {
+        require(msg.sender == admin, "Only admin can upgrade");
+        implementation = newImplementation;
+    }
+
+    fallback() external payable {
+        address impl = implementation;
+        require(impl != address(0));
+        assembly {
+          let ptr := mload(0x40)
+          calldatacopy(ptr, 0, calldatasize())
+          let result := delegatecall(gas(), impl, ptr, calldatasize(), 0, 0)
+          let size := returndatasize()
+          returndatacopy(ptr, 0, size)
+          switch result
+          case 0 { revert(ptr, size) }
+          default { return(ptr, size) }
+        }
+    }
+}
+        </code></pre>
+        <p>This example demonstrates a basic proxy pattern, highlighting the importance of secure upgradeability mechanisms.</p>
+      </section>
+      
+      <!-- Conclusion -->
+      <section class="section" id="conclusion">
+        <h3>Conclusion</h3>
+        <p>Security is a critical aspect of Solidity development. By understanding common vulnerabilities and applying best practices, you can build smart contracts that are robust against attacks. Always stay updated with the latest security recommendations and perform thorough audits on your contracts.</p>
+      </section>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
