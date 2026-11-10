@@ -1225,7 +1225,7 @@
     },
     {
      "kind": "tx",
-     "note": "payout with 50 members, some new",
+     "note": "payout with 50 members, 49 of them new",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",
@@ -1264,7 +1264,7 @@
     },
     {
      "kind": "tx",
-     "note": "payout with 200 members, some new",
+     "note": "payout with 200 members, 150 of them new",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",

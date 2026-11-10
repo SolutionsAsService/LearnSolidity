@@ -249,7 +249,7 @@
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
       <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,073</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 50 join (one join() each, not listed) · <b>49</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">payout with 50 members, some new</td>
+      <td class="note">payout with 50 members, 49 of them new</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
@@ -259,7 +259,7 @@
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
       <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:9.8%"></span></span><span class="g">405,137</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 51 to 200 join (one join() each, not listed) · <b>150</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">payout with 200 members, some new</td>
+      <td class="note">payout with 200 members, 150 of them new</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
@@ -305,7 +305,7 @@
       <td class="res"><span class="ret">1</span></td>
       <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,536*</span></td></tr></tbody></table></div></figure>
   
-  <p class="after"><strong>What it shows.</strong> Every member here is a different account, as in real use. The payout cost <b>48,073</b> gas with 1 member and <b>1,550,537</b> for a repeat payout to 200: about <b>7,636</b> gas more for every member (measured between 50 and 200). A member’s first payout costs more, about <b>24,736</b>, because their credit goes from zero to non-zero. At the repeat rate, a payout would pass the 30,000,000-gas block limit at roughly <b>3,926</b> members; from then on it could not run at all, and nobody would be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share. Its payout cost <b>43,451</b> gas with 1 member and <b>26,351</b> with 200 (the first round writes a fresh slot); a claim cost <b>70,214</b> for member 1 and <b>53,114</b> for member 200. The size of the list no longer matters.</p>
+  <p class="after"><strong>What it shows.</strong> Every member here is a different account, as in real use (and nothing stops one account joining many times, which makes the attack cheaper still). A repeat payout cost <b>405,137</b> gas with 50 members and <b>1,550,537</b> with 200: about <b>7,636</b> gas more for every member (measured between 50 and 200). A member’s first payout costs more, about <b>24,736</b>, because their credit goes from zero to non-zero. At the repeat rate, a payout would pass the 30,000,000-gas block limit at roughly <b>3,926</b> members; from then on it could not run at all, and nobody would be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share. Its payout cost <b>43,451</b> gas with 1 member and <b>26,351</b> with 200 (the first round writes a fresh slot); a claim cost <b>70,214</b> for member 1 and <b>53,114</b> for member 200 (member 1’s claim also wrote fresh slots). The size of the list no longer matters to the payer; each member now pays the gas for their own claim instead.</p>
 </section>
 </main>
 <footer class="foot">

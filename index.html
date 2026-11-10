@@ -24,28 +24,28 @@
 <section class="hero" aria-labelledby="h-hero">
   <div class="hero-text">
     <h1 id="h-hero">Solidity you can watch run.</h1>
-    <p class="lede">23 small contracts, compiled and run on a real Ethereum Virtual Machine: every transaction’s cost in gas, and every one that was refused and undone. The red one is a bug from this site’s own examples.</p>
+    <p class="lede">23 small contracts, compiled and run on a real Ethereum Virtual Machine: what each one cost in gas, and every one refused and undone. The red one is a bug from this site’s own examples.</p>
   </div>
   <figure class="block" aria-labelledby="block-cap">
     <figcaption id="block-cap"><span>One transaction from each part of the site</span><span class="muted">gas<span class="wide-only">, one scale from zero</span></span></figcaption>
     <ol class="txs"><li class="tx"><a href="basics.html#counter" aria-label="Basics: first write 43,405 gas, the next 26,305, 43,405 gas">
     <span class="tx-n">1</span><span class="tx-topic">Basics</span>
     <span class="tx-call"><b>Alice</b> → <code>Counter.increment()</code></span>
-    <span class="tx-res">first write 43,405 gas, the next 26,305 <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-res">first write 43,405 gas, the next 26,305&nbsp;<span class="go" aria-hidden="true">→</span></span>
     <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:30.6%"></span></span><span class="g">43,405</span></span></a></li><li class="tx"><a href="advanced.html#packing" aria-label="Advanced: three fields in one slot: 44,174 gas, not 88,096, 44,174 gas">
     <span class="tx-n">2</span><span class="tx-topic">Advanced</span>
     <span class="tx-call"><b>Alice</b> → <code>Packed.setAll(1, 2, 3)</code></span>
-    <span class="tx-res">three fields in one slot: 44,174 gas, not 88,096 <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-res">three fields in one slot: 44,174 gas, not 88,096&nbsp;<span class="go" aria-hidden="true">→</span></span>
     <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:31.2%"></span></span><span class="g">44,174</span></span></a></li><li class="tx"><a href="security.html#reentrancy" aria-label="Security: succeeded: re-entered 8 times, bank emptied, 141,795 gas">
     <span class="tx-n">3</span><span class="tx-topic">Security</span>
     <span class="tx-call"><b>Mallory</b> → <code>Attacker.attack()</code> <span class="val">+1 ETH</span></span>
-    <span class="tx-res">succeeded: re-entered 8 times, bank emptied <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-res">succeeded: re-entered 8 times, bank emptied&nbsp;<span class="go" aria-hidden="true">→</span></span>
     <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">141,795</span></span></a></li><li class="tx tx--hot tx--rev"><a href="example-payment.html" aria-label="Examples: reverted: promised 1 ETH the contract no longer has, 35,572 gas">
     <span class="tx-n">4</span><span class="tx-topic">Examples</span>
     <span class="tx-call"><b>Carol</b> → <code>PaymentForWork.withdraw()</code></span>
-    <span class="tx-res">reverted: promised 1 ETH the contract no longer has <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-res">reverted: promised 1 ETH the contract no longer has&nbsp;<span class="go" aria-hidden="true">→</span></span>
     <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:25.1%"></span></span><span class="g">35,572</span></span></a></li>
-      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, 882 KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of 7 contracts</span><span class="tx-res">your transaction, in your browser <span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">882 KB download</span></span></a></li>
+      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, 882 KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of 7 contracts</span><span class="tx-res">your transaction, in your browser&nbsp;<span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">882 KB download</span></span></a></li>
     </ol>
   </figure>
 </section>

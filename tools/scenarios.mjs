@@ -148,7 +148,7 @@ export const SCENARIOS = [
         }
         t.setup(`members ${from} to ${size} join (one join() each, not listed)`);
         // a new member's first credit writes a fresh storage slot (expensive); a repeat credit only changes it (cheaper)
-        await t.send('Alice', 'Unbounded', 'payout', [], 0n, `payout with ${size} members, some new`, false, { members: size, round: 'first' });
+        await t.send('Alice', 'Unbounded', 'payout', [], 0n, `payout with ${size} members, ${size - from + 1} of them new`, false, { members: size, round: 'first' });
         await t.send('Alice', 'Unbounded', 'payout', [], 0n, `next payout, same ${size} members`, false, { members: size, round: 'repeat' });
       }
       // the fix: same members, pull payments

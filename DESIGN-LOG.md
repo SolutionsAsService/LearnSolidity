@@ -237,3 +237,121 @@ captures missed, because they predated the final CSS edit (Mace F6). That miss i
   - Transactions 491 → 494 (three new runs: two repeat payouts and the 1-member PullPayout payout).
   - Gas figures elsewhere unchanged (`check.mjs` reproduces all 127 recorded steps).
   - No regressions found by the probes (22 page-and-size checks clean; hero bottoms 527 and 793 px).
+
+### Panel, WHOLE, round R3 (after M7; all captures taken after the last edit)
+
+| Critic | Anchor used | Observed in the work | Verdict | Requested change |
+|---|---|---|---|---|
+| Critic: Provocateur (Debord) | *Society of the Spectacle*, theses 1 and 4 | R2 F1–F4 resolved; 7,636, 24,736 and 3,926 recompute exactly | PASS | Optional: "listed" in the hero; explain the claim-gas drop; one account can pad the list |
+| Critic: Provocateur (Shklovsky) | "Art as Technique" | Run before code; swatches small; label clear; the red row in the hero fold | PASS | Optional: payment-page revert about 200 px below the fold |
+| Critic: Inclusion (Holmes) | *Mismatch* | Swatches 12 px; SVG title and desc list all 7 steps; step list readable | PASS | Optional: chart labels about 6 px at 375 px |
+| Critic: Inclusion (Mace) | *Principles of Universal Design* P4, P7 | 308 Tab stops ringed; forced colours keep bars, nav and reverts; captures newer than the CSS | PASS | Optional: CanvasText stroke on "promised" bars |
+| Critic: Evidence (Cairo) | *How Charts Lie* | Scratch rebuild 494 / 96 / 17; check reproduces 127 steps; regimes separated | PASS | Optional: "49 new"; compare repeat with repeat; read-call cap |
+| Critic: Evidence (Tufte) | *Visual Display* | Unbounded and payment bars match runs.json to the pixel; all three printed figures recompute | PASS | Optional: 2 px floor on tiny bars |
+| Critic: Social (Papanek) | *Design for the Real World* | Costs stated; the fix's cost shift to members unstated | PASS | Optional: grammar; say each member pays for their own claim |
+| Critic: Usability (Krug) | *Don't Make Me Think* | Five-second test, legibility and trunk test pass | PASS | Optional: "01" wrap in the jump list; arrow orphan |
+
+Andon pulled: no. **S2 met here: every required seat returned PASS in one WHOLE round.**
+
+### After R3: optional notes applied, measured, not re-judged
+
+| Finding | Resolution |
+|---|---|
+| Debord: "every transaction's cost" in the hero | ADAPT (M8): the hero no longer claims every transaction is costed |
+| Debord: the claim-gas drop unexplained | ADAPT (M8): "member 1's claim also wrote fresh slots" |
+| Debord: one account can pad the list | ADAPT (M8): one clause added |
+| Papanek: the fix's cost shift to members unstated | ADAPT (M8): "each member now pays the gas for their own claim instead" |
+| Papanek: grammar | ADAPT (M8): "882 KB download" on the example pages |
+| Cairo: "some new" is vague | ADAPT (M8): the label now says how many members are new ("49 of them new"), computed |
+| Cairo: compare repeat with repeat | ADAPT (M8): the sentence compares repeat payouts at 50 and 200 members |
+| Cairo: read-call cap unstated | DEFERRED: reads use a 10,000,000 gas cap; no lesson's read comes near it |
+| Krug: "01" wraps in the jump list | ADAPT (M8): the number stays on the baseline beside its link (measured) |
+| Krug: arrow orphan | ADAPT (M8): a non-breaking space before the arrow |
+| Mace: "promised" bars faint in forced colours | ADAPT (M8): CanvasText stroke on them |
+| Holmes: chart labels about 6 px at 375 px | SCRAP (M8): the attempt to enlarge them collided with the axis and clipped (measured on the capture), so it was reverted. The step list and the SVG description stay as the readable text version, as Holmes accepted |
+| Shklovsky: payment-page revert below the fold | DEFERRED: the page leads with the run, and the home hero carries the red row on the first screen |
+| Tufte: 2 px floor on tiny bars | DEFERRED: the value is printed beside every bar |
+
+Measuring this batch caught two regressions it caused itself, both fixed:
+- The new hero wording pushed the phone hero to 815 px, past the fold. The lede was shortened, back to 793 px.
+- The enlarged chart labels clipped (the SCRAP above).
+
+## 4. Anchor Ledger
+
+| Anchor | Role | Status | Evidence | Note |
+|---|---|---|---|---|
+| MAYA (Loewy) | Stance | KEEP | Advanced: every run real. Acceptable: R3 Krug, Holmes and Papanek PASS | Survived Shklovsky's R1 F7 (overruled in favour of the acceptable pole) |
+| First screen rule | Rule | KEEP | Block bottoms 527 / 793 px of 800 / 812 | Survived Holmes R1 F3 and the M8 regression (815 px, fixed) |
+| Landing summarises the site | Rule | KEEP | One row per topic, each linked | Survived Krug R1 F1 |
+| *Visual Display* (Tufte): data-ink, small multiples, Lie Factor | Rule | KEEP | Lie Factor 1.00 at both sizes; one scale per page | Survived Tufte R1 F1–F3 and R2 F1 |
+| Estrangement (Shklovsky) | Breaker | KEEP | The failing withdraw on the first screen; the staircase; the bug taught openly | Survived Debord's claims audit |
+| Krug ↔ Shklovsky, Krug ↔ Debord | Counterpoints (dotted) | Applied | Both pairs sat R0–R3 | Shklovsky R1 F7 overruled on Krug's side |
+
+## 5. Stop test
+
+- **S1.** Met. Every Frontier item is TAKEN, except four DEFERRED with reasons (above) and the overrule.
+- **S2.** Met in R3.
+- **S3.** NOT met. R3 was the first round without a blocking objection, but it still produced optional ADAPTs (M8), and no second
+  quiet WHOLE round was run. The run is bounded here by the conductor's cost judgement. The resume point is R4, all eight
+  seats on the M8 state.
+- **S4.** The ambition push on the Breaker was M6/M7, making the failure observable inside a transaction (the reentrancy
+  staircase) and on the chain (held against promised). Measured deltas:
+  - Unbounded's understated 614,537 became a real 4,115,537 / 1,550,537.
+  - The crossing went from unquantified to about 3,926 members.
+  - The payment chart went from inferred to read from state.
+- **S5.** Met. Both dotted pairs were applied.
+
+### 2g: every figure the site prints, re-measured at the final state (after the last edit, 03:23)
+
+| Printed figure | Procedure | Final value |
+|---|---|---|
+| Footer totals | `data/runs.json` totals, rewritten each build | 16 files, 23 contracts, 494 transactions (96 listed), 17 reverted |
+| Every gas, return, event and revert in every table | `npm run check` re-runs and diffs | "ok: all 127 recorded steps reproduce exactly" |
+| Prose figures (7,636, 24,736, 3,926, 43,405 → 0.000868 ETH, and others) | Computed in `tools/content.mjs` from the steps at build | Recomputed by Cairo and Tufte in R3 |
+| Bundle size "882 KB" | `fs.statSync` at build | 882 KB |
+| Playground gas | Scripted session in Chromium | payWorker 50,155; Carol's withdraw 35,572; equal to the build |
+
+Final probes:
+- 22 page-and-size checks clean: no sideways scroll, 0 console errors, 0 failed requests, one h1, aria-current right, 0 non-inline
+  targets under 24 px.
+- Hero block 101–527 (1280×800) and 307–793 (375×812).
+
+## Compliance Check
+
+- [x] Tooling inventory (§1)
+- [x] Mode stated with the reason (§1)
+- [x] Panel from `pick_panel.py`, every seat briefed from `seats/`; bound stated as the conductor's (§1, §5)
+- [x] Seed and Frontier (§1). Labels were not grepped against the graph, and no graph render was produced (none available).
+- [x] Run type stated (Full); landing measured complete at both sizes
+- [x] BREAK moves taken (M3, M5)
+- [x] Decision Records (§2). M6–M8 are batch records compiled from the resolution tables in the same session, not
+  written as separate documents before each edit.
+- [x] Panel Reports R0–R3, one agent per seat, each filed to disk
+- [x] Every OBJECT resolved (ADAPT, SCRAP or OVERRULE, with DEFERRED recorded)
+- [ ] S3 not met (§5)
+- [x] 2g re-measured at the final state
+- [x] Anchor Ledger (§4). The live graph was not updated (no graph tooling).
+- [x] Double loop (below)
+- [ ] Not recorded in the dada ledger: the owner asked to leave dada alone for now
+- [x] Final reply states all of the above
+
+## Double loop
+
+The criterion held, but the conductor's measurement failed twice:
+- Screenshots predated the final CSS edit, so a regression shipped to R2. Four seats caught it.
+- The first Unbounded run used five addresses, understating the danger 6.7-fold. Cairo caught it.
+
+Both are process facts, not taste. Amendment (process): the evidence file must carry its capture timestamp beside the
+newest source timestamp, and any probe that sends many transactions must use distinct accounts.
+
+## Carry-Forward Ledger (LearnSolidity)
+
+- EthereumJS `evm.runCall` bumps the caller's nonce and leaves storage slots warm. Wrap each read in a stateManager
+  checkpoint and revert, and call `journal.cleanup()` before and after. Measured: the next transaction failed on its nonce,
+  and a read reported 676 gas instead of 4,676.
+- Since solc 0.8.22 a manual `unchecked { ++i; }` loop costs 22 more gas per 1,000 iterations than the plain loop (123,306
+  against 123,284), because the compiler already removes the check.
+- `.owed svg { width: 100% }` also matched the legend swatch SVGs and drew them 760 px wide. Scope figure rules with `>`.
+- Mobile bars next to a variable-width number shrink unevenly (Lie Factor 0.95). Give the number a fixed column (8.5ch).
+- A first credit to a new member (zero to non-zero) costs about 24,736 gas; a repeat credit about 7,636. A loop's growth
+  must be measured in the regime it will run in.

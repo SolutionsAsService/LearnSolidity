@@ -169,7 +169,7 @@ function examplePage(key) {
   const fixed = key === 'payment' ? runs.paymentfixed : null;
   const max = txMax(fixed ? [r, fixed] : [r]);
   const body = `<div class="page-head"><p class="kicker"><a href="examples.html">Examples</a></p><h1>${esc(e.title)}</h1><p class="lede">${esc(e.lede)}</p>
-<p><a class="btn btn--ghost" href="playground.html?c=${encodeURIComponent(r.file.split('/')[1].replace('.sol', ''))}">Run it yourself <span class="muted">(a ${BUNDLE_KB} KB download)</span></a></p></div>
+<p><a class="btn btn--ghost" href="playground.html?c=${encodeURIComponent(r.file.split('/')[1].replace('.sol', ''))}">Run it yourself <span class="muted">(${BUNDLE_KB} KB download)</span></a></p></div>
 <section class="lesson" aria-labelledby="h-run"><h2 id="h-run">What happened when it ran</h2>${trace(r, { max, caption: 'The run' })}<p class="after"><strong>What it shows.</strong> ${e.after(r.steps)}</p>${termBox(['transaction', 'revert', 'event'])}</section>
 ${fixed ? owedChart() : ''}
 <section class="lesson" aria-labelledby="h-src"><h2 id="h-src">The contract</h2>${codeBlock(r.file, 'as in the original repository')}</section>
@@ -226,17 +226,17 @@ function landing() {
   const tr = rows.map((r, i) => `<li class="tx${r.hot ? ' tx--hot' : ''}${r.s.ok === false ? ' tx--rev' : ''}"><a href="${r.href}" aria-label="${r.topic}: ${esc(r.say)}, ${n(r.s.gas)} gas">
     <span class="tx-n">${i + 1}</span><span class="tx-topic">${r.topic}</span>
     <span class="tx-call"><b>${esc(r.s.from)}</b> → <code>${esc(r.s.to)}.${esc(r.s.call)}</code>${r.s.valueText ? ` <span class="val">+${esc(r.s.valueText)}</span>` : ''}</span>
-    <span class="tx-res">${esc(r.say)} <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-res">${esc(r.say)}&nbsp;<span class="go" aria-hidden="true">→</span></span>
     <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar${r.s.ok === false ? ' bar--rev' : ''}" style="--w:${((r.s.gas / max) * 100).toFixed(1)}%"></span></span><span class="g">${n(r.s.gas)}</span></span></a></li>`).join('');
   const body = `<section class="hero" aria-labelledby="h-hero">
   <div class="hero-text">
     <h1 id="h-hero">Solidity you can watch run.</h1>
-    <p class="lede">${TOTALS.contracts} small contracts, compiled and run on a real Ethereum Virtual Machine: every transaction’s cost in gas, and every one that was refused and undone. The red one is a bug from this site’s own examples.</p>
+    <p class="lede">${TOTALS.contracts} small contracts, compiled and run on a real Ethereum Virtual Machine: what each one cost in gas, and every one refused and undone. The red one is a bug from this site’s own examples.</p>
   </div>
   <figure class="block" aria-labelledby="block-cap">
     <figcaption id="block-cap"><span>One transaction from each part of the site</span><span class="muted">gas<span class="wide-only">, one scale from zero</span></span></figcaption>
     <ol class="txs">${tr}
-      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, ${BUNDLE_KB} KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of ${PLAY.length} contracts</span><span class="tx-res">your transaction, in your browser <span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">${BUNDLE_KB} KB download</span></span></a></li>
+      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, ${BUNDLE_KB} KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of ${PLAY.length} contracts</span><span class="tx-res">your transaction, in your browser&nbsp;<span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">${BUNDLE_KB} KB download</span></span></a></li>
     </ol>
   </figure>
 </section>

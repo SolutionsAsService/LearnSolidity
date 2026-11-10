@@ -100,7 +100,8 @@ h2 { font-size: clamp(26px, 3vw, 36px); line-height: 1.1; margin: 0 0 16px; }
 .page-head { padding: 36px 0 24px; border-bottom: 2px solid var(--ink); }
 .page-head .btn { margin-top: 18px; }
 .toc { display: flex; flex-wrap: wrap; gap: 6px 22px; padding: 0; margin: 20px 0 0; list-style: none; font: 500 15px var(--mono); counter-reset: t; }
-.toc li { counter-increment: t; }
+.toc li { counter-increment: t; display: flex; gap: 6px; align-items: baseline; }
+.toc li::before { flex: none; }
 .toc li::before { content: counter(t, decimal-leading-zero) " "; color: var(--gas); }
 .toc a { display: inline-block; padding: 10px 0; }
 .lesson { padding: 40px 0 32px; border-bottom: 1px solid var(--rule); }
@@ -222,7 +223,7 @@ select, input[type=text], input[type=number] { min-height: 44px; padding: 0 10px
 @media (forced-colors: active) {
   .bar { forced-color-adjust: none; background: CanvasText; }
   .bar--rev { background: Mark; outline: 2px solid CanvasText; outline-offset: -2px; }
-  .c-held { fill: CanvasText; } .c-owed { fill: Mark; }
+  .c-held { fill: CanvasText; } .c-owed { fill: Mark; stroke: CanvasText; stroke-width: 2; }
   .key, .owed svg { forced-color-adjust: none; }
   .mast nav a { text-decoration: none; border-bottom-color: transparent; }
   .mast nav a[aria-current="page"] { border-bottom: 3px solid Highlight; font-weight: 700; }
