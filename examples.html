@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Examples · Learn Solidity</title>
+<meta name="description" content="Three complete Solidity contracts run through a short story each: voting, pet adoption and payment for work.">
+<meta property="og:title" content="Examples · Learn Solidity">
+<meta property="og:description" content="Three complete Solidity contracts run through a short story each: voting, pet adoption and payment for work.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html" aria-current="page">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Examples</p><h1>Three complete contracts</h1><p class="lede">The contracts from this site’s original repository, unchanged, each run through a short story. One of them has a bug that only shows when it runs.</p></div><ol class="path path--ex"><li><a href="example-voting.html"><b>Voting system</b><span>The owner creates proposals; each address votes once.</span><span class="muted">8 transactions in the run, 3 reverted</span></a></li><li><a href="example-pets.html"><b>Pet adoption</b><span>The owner lists pets with a fee; anyone can adopt one by paying it, and gets any overpayment back.</span><span class="muted">5 transactions in the run, 2 reverted</span></a></li><li><a href="example-payment.html"><b>Payment for work</b><span>The employer deposits ether and credits workers; workers withdraw what they are owed. As written, it can promise more than it holds.</span><span class="muted">7 transactions in the run, 1 reverted</span></a></li></ol>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+
+</body>
+</html>

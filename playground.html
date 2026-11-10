@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run it · Learn Solidity</title>
+<meta name="description" content="Deploy and call Solidity contracts in an EVM running in your browser: five test accounts, real gas and reverts.">
+<meta property="og:title" content="Run it · Learn Solidity">
+<meta property="og:description" content="Deploy and call Solidity contracts in an EVM running in your browser: five test accounts, real gas and reverts.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html" aria-current="page">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Run it</p><h1>Run the contracts yourself</h1>
+<p class="lede">A fresh chain runs in this page: five accounts with 1,000 test ether each, and the contracts from this site, precompiled. Pick who you are and call any function. Nothing leaves your browser and the ether is not real. The EVM is a 882 KB download.</p></div>
+<section class="play" aria-label="Playground">
+  <div class="play-controls">
+    <label>Contract <select id="pg-contract"><option value="Counter">Counter</option><option value="Guarded">Guarded</option><option value="PiggyBank">PiggyBank</option><option value="VotingSystem">VotingSystem</option><option value="PetAdoption">PetAdoption</option><option value="PaymentForWork">PaymentForWork</option><option value="PaymentForWorkFixed">PaymentForWorkFixed</option></select></label>
+    <label>You are <select id="pg-actor"></select></label>
+    <button class="btn btn--ghost" id="pg-reset" type="button">Start over</button>
+  </div>
+  <div class="play-grid">
+    <div><h2 class="h3">Functions</h2><div id="pg-fns" class="fns"><p class="muted">Loading the EVM…</p></div></div>
+    <div><h2 class="h3">Accounts</h2><table class="balances" id="pg-bal"></table></div>
+  </div>
+  <figure class="trace"><figcaption>Your transactions <span class="muted">· newest first</span></figcaption><div class="trace-wrap"><table><thead><tr><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody id="pg-log" aria-live="polite"></tbody></table></div></figure>
+</section>
+<noscript><p>The playground needs JavaScript. Every other page works without it.</p></noscript>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+<script type="module" src="assets/js/playground.js"></script>
+</body>
+</html>

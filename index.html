@@ -1,107 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solidity Learning Hub - Home</title>
-  <link rel="stylesheet" href="css/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn Solidity: contracts you can watch run</title>
+<meta name="description" content="Learn Solidity from 23 contracts that were compiled and run: gas, events and reverts for every transaction, and a playground that runs them in your browser.">
+<meta property="og:title" content="Learn Solidity: contracts you can watch run">
+<meta property="og:description" content="Learn Solidity from 23 contracts that were compiled and run: gas, events and reverts for every transaction, and a playground that runs them in your browser.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-
-  <!-- Header Section -->
-  <header>
-    <div class="container header-container">
-      <h1>Solidity Learning Hub</h1>
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html" class="active">Home</a></li>
-          <li><a href="beginner.html">Beginners</a></li>
-          <li><a href="advanced.html">Advanced</a></li>
-          <li><a href="security.html">Security</a></li>
-          <li><a href="resources.html">Resources</a></li>
-          <li><a href="about.html">About</a></li>
-        </ul>
-      </nav>
-       <button class="theme-switch" id="theme-switcher">Toggle Theme</button>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main>
-
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="container">
-        <h2>Master Solidity & Smart Contract Development</h2>
-        <p>Start your journey into blockchain development with the most comprehensive Solidity learning platform.</p>
-        <a href="beginner.html" class="button">Get Started</a>
-      </div>
-    </section>
-
-    <!-- Introduction to Solidity -->
-    <section class="section introduction">
-      <div class="container">
-        <div class="intro-text">
-          <h2>Why Learn Solidity?</h2>
-          <p>Solidity is the backbone of smart contract development on Ethereum and other blockchains. Whether you're a beginner or an experienced developer, mastering Solidity opens doors to decentralized application (DApp) development, DeFi, and NFT innovations.</p>
-        </div>
-        <div class="intro-image">
-          <img src="images/solidity-diagram.png" alt="Solidity Smart Contract Diagram">
-        </div>
-      </div>
-    </section>
-
-    <!-- Key Learning Sections -->
-    <section class="section learning-path">
-      <div class="container">
-        <h2>Explore Our Learning Paths</h2>
-        <div class="grid-container">
-          <div class="grid-item">
-            <h3>Beginner Guide</h3>
-            <p>New to Solidity? Start with the basics: syntax, structure, and writing your first smart contract.</p>
-            <a href="beginner.html" class="button">Start Learning</a>
-          </div>
-          <div class="grid-item">
-            <h3>Advanced Concepts</h3>
-            <p>Dive into gas optimization, design patterns, and integrating Solidity with real-world applications.</p>
-            <a href="advanced.html" class="button">Explore More</a>
-          </div>
-          <div class="grid-item">
-            <h3>Security Best Practices</h3>
-            <p>Understand smart contract vulnerabilities and how to write secure, audit-ready contracts.</p>
-            <a href="security.html" class="button">Learn Security</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials / Success Stories -->
-    <section class="section testimonials">
-      <div class="container">
-        <h2>What Developers Say</h2>
-        <div class="testimonials-container">
-          <div class="testimonial">
-            <p>"This platform gave me the skills to build my first DeFi application. Highly recommended!"</p>
-            <h4>- Alex T., Blockchain Developer</h4>
-          </div>
-          <div class="testimonial">
-            <p>"The security section is a must-read! I learned how to avoid common vulnerabilities in Solidity."</p>
-            <h4>- Sarah L., Smart Contract Auditor</h4>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <script src="js/script.js"></script>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html" aria-current="page">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<section class="hero" aria-labelledby="h-hero">
+  <div class="hero-text">
+    <h1 id="h-hero">Solidity you can watch run.</h1>
+    <p class="lede">23 small contracts, compiled and run on a real Ethereum Virtual Machine: every transaction’s cost in gas, and every one that was refused and undone. The red one is a bug from this site’s own examples.</p>
+  </div>
+  <figure class="block" aria-labelledby="block-cap">
+    <figcaption id="block-cap"><span>One transaction from each part of the site</span><span class="muted">gas<span class="wide-only">, one scale from zero</span></span></figcaption>
+    <ol class="txs"><li class="tx"><a href="basics.html#counter" aria-label="Basics: first write 43,405 gas, the next 26,305, 43,405 gas">
+    <span class="tx-n">1</span><span class="tx-topic">Basics</span>
+    <span class="tx-call"><b>Alice</b> → <code>Counter.increment()</code></span>
+    <span class="tx-res">first write 43,405 gas, the next 26,305 <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:30.6%"></span></span><span class="g">43,405</span></span></a></li><li class="tx"><a href="advanced.html#packing" aria-label="Advanced: three fields in one slot: 44,174 gas, not 88,096, 44,174 gas">
+    <span class="tx-n">2</span><span class="tx-topic">Advanced</span>
+    <span class="tx-call"><b>Alice</b> → <code>Packed.setAll(1, 2, 3)</code></span>
+    <span class="tx-res">three fields in one slot: 44,174 gas, not 88,096 <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:31.2%"></span></span><span class="g">44,174</span></span></a></li><li class="tx"><a href="security.html#reentrancy" aria-label="Security: succeeded: re-entered 8 times, bank emptied, 141,795 gas">
+    <span class="tx-n">3</span><span class="tx-topic">Security</span>
+    <span class="tx-call"><b>Mallory</b> → <code>Attacker.attack()</code> <span class="val">+1 ETH</span></span>
+    <span class="tx-res">succeeded: re-entered 8 times, bank emptied <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">141,795</span></span></a></li><li class="tx tx--hot tx--rev"><a href="example-payment.html" aria-label="Examples: reverted: promised 1 ETH the contract no longer has, 35,572 gas">
+    <span class="tx-n">4</span><span class="tx-topic">Examples</span>
+    <span class="tx-call"><b>Carol</b> → <code>PaymentForWork.withdraw()</code></span>
+    <span class="tx-res">reverted: promised 1 ETH the contract no longer has <span class="go" aria-hidden="true">→</span></span>
+    <span class="tx-gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:25.1%"></span></span><span class="g">35,572</span></span></a></li>
+      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, 882 KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of 7 contracts</span><span class="tx-res">your transaction, in your browser <span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">yours · 882 KB</span></span></a></li>
+    </ol>
+  </figure>
+</section>
+<section class="band" aria-labelledby="h-path"><h2 id="h-path">Three levels, then three complete contracts</h2>
+<ol class="path">
+  <li><a href="basics.html"><b>Basics</b><span>State, calls, require, ether. 4 contracts.</span></a></li>
+  <li><a href="advanced.html"><b>Advanced</b><span>Where gas goes: errors, packing, inheritance, loops. 4 contracts.</span></a></li>
+  <li><a href="security.html"><b>Security</b><span>Reentrancy, overflow, tx.origin, unbounded loops: each run, then run again against the fix.</span></a></li>
+  <li><a href="examples.html"><b>Examples</b><span>Three complete contracts, one with a money bug.</span></a></li>
+</ol></section>
+<section class="band" aria-labelledby="h-learned"><h2 id="h-learned">Things the runs taught us</h2>
+<ul class="facts">
+  <li><b>Refusing costs gas.</b> A reverted call still charged its sender 21,552 gas. <a href="basics.html#guarded">See it</a></li>
+  <li><b>A popular trick stopped working.</b> <code>unchecked { ++i; }</code> in a loop now costs 22 gas more over 1,000 iterations, not less. <a href="advanced.html#loops">See it</a></li>
+  <li><b>The textbook reentrancy example no longer drains under 0.8.</b> It reverts on underflow, which hides the bug. <a href="security.html#reentrancy">See one that does</a></li>
+</ul></section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
 
 </body>
 </html>

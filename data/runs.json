@@ -1,0 +1,2048 @@
+{
+ "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+ "evm": "cancun",
+ "totals": {
+  "contracts": 23,
+  "files": 16,
+  "tx": 491,
+  "listed": 93,
+  "reverts": 17,
+  "scenarios": 16
+ },
+ "runs": {
+  "counter": {
+   "id": "counter",
+   "file": "basics/Counter.sol",
+   "title": "A number that lives on chain",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Counter",
+     "from": "Alice",
+     "to": null,
+     "call": "new Counter()",
+     "value": "0",
+     "ok": true,
+     "gas": 99711,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "first write: 0 → 1",
+     "from": "Alice",
+     "to": "Counter",
+     "call": "increment()",
+     "value": "0",
+     "ok": true,
+     "gas": 43405,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "second write: 1 → 2",
+     "from": "Alice",
+     "to": "Counter",
+     "call": "increment()",
+     "value": "0",
+     "ok": true,
+     "gas": 26305,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Counter",
+     "call": "count()",
+     "ok": true,
+     "returns": "2",
+     "gas": 2259
+    },
+    {
+     "kind": "tx",
+     "note": "back to zero: refund",
+     "from": "Bob",
+     "to": "Counter",
+     "call": "reset()",
+     "value": "0",
+     "ok": true,
+     "gas": 21422,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Counter",
+     "call": "count()",
+     "ok": true,
+     "returns": "0",
+     "gas": 2259
+    }
+   ],
+   "compare": null,
+   "sent": 4
+  },
+  "ledger": {
+   "id": "ledger",
+   "file": "basics/Ledger.sol",
+   "title": "Mappings, structs and events",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Ledger",
+     "from": "Alice",
+     "to": null,
+     "call": "new Ledger()",
+     "value": "0",
+     "ok": true,
+     "gas": 156447,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "Ledger",
+     "call": "record(42)",
+     "value": "0",
+     "ok": true,
+     "gas": 67267,
+     "events": [
+      "Recorded(Alice, 42)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Recorded",
+       "args": [
+        "0x1a642f0E3c3aF545E7AcBD38b07251B3990914F1",
+        "42"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Bob",
+     "to": "Ledger",
+     "call": "record(7)",
+     "value": "0",
+     "ok": true,
+     "gas": 67267,
+     "events": [
+      "Recorded(Bob, 7)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Recorded",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "7"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Ledger",
+     "call": "amountOf(Alice)",
+     "ok": true,
+     "returns": "42",
+     "gas": 2469
+    },
+    {
+     "kind": "read",
+     "note": "an address that never wrote",
+     "to": "Ledger",
+     "call": "amountOf(Carol)",
+     "ok": true,
+     "returns": "0",
+     "gas": 2469
+    }
+   ],
+   "compare": null,
+   "sent": 3
+  },
+  "guarded": {
+   "id": "guarded",
+   "file": "basics/Guarded.sol",
+   "title": "require: saying no",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Guarded",
+     "from": "Alice",
+     "to": null,
+     "call": "new Guarded()",
+     "value": "0",
+     "ok": true,
+     "gas": 173684,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "not the owner",
+     "from": "Bob",
+     "to": "Guarded",
+     "call": "setLimit(500)",
+     "value": "0",
+     "ok": false,
+     "gas": 21552,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Only the owner can set the limit"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "owner, bad value",
+     "from": "Alice",
+     "to": "Guarded",
+     "call": "setLimit(0)",
+     "value": "0",
+     "ok": false,
+     "gas": 21564,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Limit must be positive"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "owner, good value",
+     "from": "Alice",
+     "to": "Guarded",
+     "call": "setLimit(500)",
+     "value": "0",
+     "ok": true,
+     "gas": 26477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Guarded",
+     "call": "limit()",
+     "ok": true,
+     "returns": "500",
+     "gas": 2315
+    }
+   ],
+   "compare": null,
+   "sent": 4
+  },
+  "piggy": {
+   "id": "piggy",
+   "file": "basics/PiggyBank.sol",
+   "title": "Receiving and sending ether",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy PiggyBank",
+     "from": "Alice",
+     "to": null,
+     "call": "new PiggyBank()",
+     "value": "0",
+     "ok": true,
+     "gas": 173124,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "Bob sends 1 ETH",
+     "from": "Bob",
+     "to": "PiggyBank",
+     "call": "send ether",
+     "value": "1000000000000000000",
+     "ok": true,
+     "gas": 22491,
+     "events": [
+      "Deposited(Bob, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Deposited",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": "1 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Carol sends 0.5 ETH",
+     "from": "Carol",
+     "to": "PiggyBank",
+     "call": "send ether",
+     "value": "500000000000000000",
+     "ok": true,
+     "gas": 22491,
+     "events": [
+      "Deposited(Carol, 0.5 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Deposited",
+       "args": [
+        "0x3325a78425F17a7E487Eb5666b2bFd93aBb06c70",
+        "500000000000000000"
+       ]
+      }
+     ],
+     "valueText": "0.5 ETH"
+    },
+    {
+     "kind": "balance",
+     "note": "PiggyBank balance",
+     "to": "PiggyBank",
+     "returns": "1.5 ETH",
+     "wei": "1500000000000000000"
+    },
+    {
+     "kind": "tx",
+     "note": "Bob tries to smash it",
+     "from": "Bob",
+     "to": "PiggyBank",
+     "call": "smash()",
+     "value": "0",
+     "ok": false,
+     "gas": 21327,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Not your piggy bank"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "the owner smashes it",
+     "from": "Alice",
+     "to": "PiggyBank",
+     "call": "smash()",
+     "value": "0",
+     "ok": true,
+     "gas": 28160,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "balance",
+     "note": "PiggyBank balance",
+     "to": "PiggyBank",
+     "returns": "0 ETH",
+     "wei": "0"
+    }
+   ],
+   "compare": null,
+   "sent": 5
+  },
+  "errors": {
+   "id": "errors",
+   "file": "advanced/Errors.sol",
+   "title": "Custom errors are cheaper",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy RequireString",
+     "from": "Alice",
+     "to": null,
+     "call": "new RequireString()",
+     "value": "0",
+     "ok": true,
+     "gas": 123679,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy CustomError",
+     "from": "Alice",
+     "to": null,
+     "call": "new CustomError()",
+     "value": "0",
+     "ok": true,
+     "gas": 109275,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x248e85939e48ca12a20cdf80e60d9e3d380ca7f9"
+    },
+    {
+     "kind": "tx",
+     "note": "refused with a string",
+     "from": "Bob",
+     "to": "RequireString",
+     "call": "guarded()",
+     "value": "0",
+     "ok": false,
+     "gas": 21344,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Only the owner may call this function"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "refused with a custom error",
+     "from": "Bob",
+     "to": "CustomError",
+     "call": "guarded()",
+     "value": "0",
+     "ok": false,
+     "gas": 21283,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "custom",
+      "text": "NotOwner(Bob)"
+     },
+     "valueText": null
+    }
+   ],
+   "compare": [
+    [
+     "deploy RequireString",
+     "deploy CustomError"
+    ],
+    [
+     "refused with a string",
+     "refused with a custom error"
+    ]
+   ],
+   "sent": 4
+  },
+  "packing": {
+   "id": "packing",
+   "file": "advanced/Packing.sol",
+   "title": "Pack your storage",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Loose",
+     "from": "Alice",
+     "to": null,
+     "call": "new Loose()",
+     "value": "0",
+     "ok": true,
+     "gas": 103827,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy Packed",
+     "from": "Alice",
+     "to": null,
+     "call": "new Packed()",
+     "value": "0",
+     "ok": true,
+     "gas": 152583,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x248e85939e48ca12a20cdf80e60d9e3d380ca7f9"
+    },
+    {
+     "kind": "tx",
+     "note": "three slots",
+     "from": "Alice",
+     "to": "Loose",
+     "call": "setAll(1, 2, 3)",
+     "value": "0",
+     "ok": true,
+     "gas": 88096,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "one slot",
+     "from": "Alice",
+     "to": "Packed",
+     "call": "setAll(1, 2, 3)",
+     "value": "0",
+     "ok": true,
+     "gas": 44174,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    }
+   ],
+   "compare": [
+    [
+     "three slots",
+     "one slot"
+    ]
+   ],
+   "sent": 4
+  },
+  "inheritance": {
+   "id": "inheritance",
+   "file": "advanced/Inheritance.sol",
+   "title": "Inheritance and interfaces",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Greeter",
+     "from": "Alice",
+     "to": null,
+     "call": "new Greeter()",
+     "value": "0",
+     "ok": true,
+     "gas": 301691,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Greeter",
+     "call": "greet()",
+     "ok": true,
+     "returns": "gm",
+     "gas": 3107
+    },
+    {
+     "kind": "tx",
+     "note": "onlyOwner from Owned",
+     "from": "Bob",
+     "to": "Greeter",
+     "call": "setGreeting(hello)",
+     "value": "0",
+     "ok": false,
+     "gas": 24092,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "custom",
+      "text": "NotOwner()"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "Greeter",
+     "call": "setGreeting(hello)",
+     "value": "0",
+     "ok": true,
+     "gas": 29434,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Greeter",
+     "call": "greet()",
+     "ok": true,
+     "returns": "hello",
+     "gas": 3107
+    }
+   ],
+   "compare": null,
+   "sent": 3
+  },
+  "loops": {
+   "id": "loops",
+   "file": "advanced/Loops.sol",
+   "title": "unchecked in loops",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Loops",
+     "from": "Alice",
+     "to": null,
+     "call": "new Loops()",
+     "value": "0",
+     "ok": true,
+     "gas": 112287,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "read",
+     "note": "checked, n = 10",
+     "to": "Loops",
+     "call": "sumChecked(10)",
+     "ok": true,
+     "returns": "45",
+     "gas": 1514
+    },
+    {
+     "kind": "read",
+     "note": "unchecked, n = 10",
+     "to": "Loops",
+     "call": "sumUnchecked(10)",
+     "ok": true,
+     "returns": "45",
+     "gas": 1536
+    },
+    {
+     "kind": "read",
+     "note": "checked, n = 100",
+     "to": "Loops",
+     "call": "sumChecked(100)",
+     "ok": true,
+     "returns": "4950",
+     "gas": 12584
+    },
+    {
+     "kind": "read",
+     "note": "unchecked, n = 100",
+     "to": "Loops",
+     "call": "sumUnchecked(100)",
+     "ok": true,
+     "returns": "4950",
+     "gas": 12606
+    },
+    {
+     "kind": "read",
+     "note": "checked, n = 1000",
+     "to": "Loops",
+     "call": "sumChecked(1000)",
+     "ok": true,
+     "returns": "499500",
+     "gas": 123284
+    },
+    {
+     "kind": "read",
+     "note": "unchecked, n = 1000",
+     "to": "Loops",
+     "call": "sumUnchecked(1000)",
+     "ok": true,
+     "returns": "499500",
+     "gas": 123306
+    }
+   ],
+   "compare": null,
+   "sent": 1
+  },
+  "reentrancy": {
+   "id": "reentrancy",
+   "file": "security/Reentrancy.sol",
+   "title": "Reentrancy: paying before bookkeeping",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy VulnerableBank",
+     "from": "Alice",
+     "to": null,
+     "call": "new VulnerableBank()",
+     "value": "0",
+     "ok": true,
+     "gas": 174399,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice deposits 2 ETH",
+     "from": "Alice",
+     "to": "VulnerableBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Bob deposits 2 ETH",
+     "from": "Bob",
+     "to": "VulnerableBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Carol deposits 2 ETH",
+     "from": "Carol",
+     "to": "VulnerableBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Dave deposits 2 ETH",
+     "from": "Dave",
+     "to": "VulnerableBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "balance",
+     "note": "bank holds",
+     "to": "VulnerableBank",
+     "returns": "8 ETH",
+     "wei": "8000000000000000000"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy Attacker",
+     "from": "Mallory",
+     "to": null,
+     "call": "new Attacker(VulnerableBank)",
+     "value": "0",
+     "ok": true,
+     "gas": 224297,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0xc6e34ddd791c0927de48ee7ce354961bdef5ddda"
+    },
+    {
+     "kind": "tx",
+     "note": "Mallory attacks with 1 ETH",
+     "from": "Mallory",
+     "to": "Attacker",
+     "call": "attack()",
+     "value": "1000000000000000000",
+     "ok": true,
+     "gas": 141795,
+     "events": [
+      "Reentered(1, 8 ETH)",
+      "Reentered(2, 7 ETH)",
+      "Reentered(3, 6 ETH)",
+      "Reentered(4, 5 ETH)",
+      "Reentered(5, 4 ETH)",
+      "Reentered(6, 3 ETH)",
+      "Reentered(7, 2 ETH)",
+      "Reentered(8, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Reentered",
+       "args": [
+        "1",
+        "8000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "2",
+        "7000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "3",
+        "6000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "4",
+        "5000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "5",
+        "4000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "6",
+        "3000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "7",
+        "2000000000000000000"
+       ]
+      },
+      {
+       "name": "Reentered",
+       "args": [
+        "8",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": "1 ETH"
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Attacker",
+     "call": "reentries()",
+     "ok": true,
+     "returns": "8",
+     "gas": 2260
+    },
+    {
+     "kind": "balance",
+     "note": "bank holds",
+     "to": "VulnerableBank",
+     "returns": "0 ETH",
+     "wei": "0"
+    },
+    {
+     "kind": "balance",
+     "note": "attacker holds",
+     "to": "Attacker",
+     "returns": "9 ETH",
+     "wei": "9000000000000000000"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice tries to withdraw her 2 ETH",
+     "from": "Alice",
+     "to": "VulnerableBank",
+     "call": "withdraw()",
+     "value": "0",
+     "ok": false,
+     "gas": 30423,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Transfer failed"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy SafeBank",
+     "from": "Alice",
+     "to": null,
+     "call": "new SafeBank()",
+     "value": "0",
+     "ok": true,
+     "gas": 174399,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x2bea3833344507da3019f46dd77a67b34738bc67"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice deposits 2 ETH",
+     "from": "Alice",
+     "to": "SafeBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Bob deposits 2 ETH",
+     "from": "Bob",
+     "to": "SafeBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Carol deposits 2 ETH",
+     "from": "Carol",
+     "to": "SafeBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Dave deposits 2 ETH",
+     "from": "Dave",
+     "to": "SafeBank",
+     "call": "deposit()",
+     "value": "2000000000000000000",
+     "ok": true,
+     "gas": 43477,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "2 ETH"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy Attacker (2nd)",
+     "from": "Mallory",
+     "to": null,
+     "call": "new Attacker(SafeBank)",
+     "value": "0",
+     "ok": true,
+     "gas": 224297,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x56082e379153dcc1cf2b6becf37bed839f9070a0"
+    },
+    {
+     "kind": "tx",
+     "note": "Mallory attacks SafeBank with 1 ETH",
+     "from": "Mallory",
+     "to": "Attacker (2nd)",
+     "call": "attack()",
+     "value": "1000000000000000000",
+     "ok": false,
+     "gas": 85898,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Transfer failed"
+     },
+     "valueText": "1 ETH"
+    },
+    {
+     "kind": "balance",
+     "note": "safe bank holds",
+     "to": "SafeBank",
+     "returns": "8 ETH",
+     "wei": "8000000000000000000"
+    }
+   ],
+   "compare": null,
+   "sent": 15
+  },
+  "overflow": {
+   "id": "overflow",
+   "file": "security/Overflow.sol",
+   "title": "Overflow is checked",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Overflow",
+     "from": "Alice",
+     "to": null,
+     "call": "new Overflow()",
+     "value": "0",
+     "ok": true,
+     "gas": 134362,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Overflow",
+     "call": "small()",
+     "ok": true,
+     "returns": "255",
+     "gas": 2321
+    },
+    {
+     "kind": "tx",
+     "note": "255 + 1, checked",
+     "from": "Alice",
+     "to": "Overflow",
+     "call": "addChecked()",
+     "value": "0",
+     "ok": false,
+     "gas": 23403,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "panic",
+      "text": "Panic(0x11): arithmetic overflow or underflow"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "255 + 1, unchecked",
+     "from": "Alice",
+     "to": "Overflow",
+     "call": "addUnchecked()",
+     "value": "0",
+     "ok": true,
+     "gas": 21442,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "Overflow",
+     "call": "small()",
+     "ok": true,
+     "returns": "0",
+     "gas": 2321
+    }
+   ],
+   "compare": null,
+   "sent": 3
+  },
+  "txorigin": {
+   "id": "txorigin",
+   "file": "security/TxOrigin.sol",
+   "title": "tx.origin is not the caller",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy OriginWallet",
+     "from": "Alice",
+     "to": null,
+     "call": "new OriginWallet()",
+     "value": "0",
+     "ok": true,
+     "gas": 146553,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice funds her wallet",
+     "from": "Alice",
+     "to": "OriginWallet",
+     "call": "send ether",
+     "value": "5000000000000000000",
+     "ok": true,
+     "gas": 21055,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "5 ETH"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy Phisher",
+     "from": "Mallory",
+     "to": null,
+     "call": "new Phisher()",
+     "value": "0",
+     "ok": true,
+     "gas": 133169,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0xc6e34ddd791c0927de48ee7ce354961bdef5ddda"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice \"claims an airdrop\"",
+     "from": "Alice",
+     "to": "Phisher",
+     "call": "claimAirdrop(OriginWallet)",
+     "value": "0",
+     "ok": true,
+     "gas": 34406,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "balance",
+     "note": "wallet holds",
+     "to": "OriginWallet",
+     "returns": "0 ETH",
+     "wei": "0"
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy SenderWallet",
+     "from": "Alice",
+     "to": null,
+     "call": "new SenderWallet()",
+     "value": "0",
+     "ok": true,
+     "gas": 146553,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x2bea3833344507da3019f46dd77a67b34738bc67"
+    },
+    {
+     "kind": "tx",
+     "note": "Alice funds the fixed wallet",
+     "from": "Alice",
+     "to": "SenderWallet",
+     "call": "send ether",
+     "value": "5000000000000000000",
+     "ok": true,
+     "gas": 21055,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "5 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "same trick, msg.sender check",
+     "from": "Alice",
+     "to": "Phisher",
+     "call": "claimAirdrop(SenderWallet)",
+     "value": "0",
+     "ok": false,
+     "gas": 25099,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Not owner"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "balance",
+     "note": "fixed wallet holds",
+     "to": "SenderWallet",
+     "returns": "5 ETH",
+     "wei": "5000000000000000000"
+    }
+   ],
+   "compare": null,
+   "sent": 7
+  },
+  "unbounded": {
+   "id": "unbounded",
+   "file": "security/Unbounded.sol",
+   "title": "Loops that grow",
+   "example": false,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy Unbounded",
+     "from": "Alice",
+     "to": null,
+     "call": "new Unbounded()",
+     "value": "0",
+     "ok": true,
+     "gas": 175683,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": "member 1 joins",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "join()",
+     "value": "0",
+     "ok": true,
+     "gas": 65481,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "payout with 1 member",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 48073,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "setup",
+     "note": "members 2 to 10 join (one join() each, not listed)",
+     "count": 9
+    },
+    {
+     "kind": "tx",
+     "note": "payout with 10 members",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 253597,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "setup",
+     "note": "members 11 to 50 join (one join() each, not listed)",
+     "count": 40
+    },
+    {
+     "kind": "tx",
+     "note": "payout with 50 members",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 1089137,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "setup",
+     "note": "members 51 to 200 join (one join() each, not listed)",
+     "count": 150
+    },
+    {
+     "kind": "tx",
+     "note": "payout with 200 members",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 4115537,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "deploy",
+     "note": "deploy PullPayout",
+     "from": "Alice",
+     "to": null,
+     "call": "new PullPayout()",
+     "value": "0",
+     "ok": true,
+     "gas": 219076,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0xf660e5ab1cf0ec7fb0b4cc1eace444a78f7d70f4"
+    },
+    {
+     "kind": "tx",
+     "note": "member 1 joins",
+     "from": "Alice",
+     "to": "PullPayout",
+     "call": "join()",
+     "value": "0",
+     "ok": true,
+     "gas": 48010,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "setup",
+     "note": "members 2 to 200 join (not listed)",
+     "count": 199
+    },
+    {
+     "kind": "tx",
+     "note": "pull payout with 200 members",
+     "from": "Alice",
+     "to": "PullPayout",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 43451,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "member 200 claims their share",
+     "from": "Member200",
+     "to": "PullPayout",
+     "call": "claim()",
+     "value": "0",
+     "ok": true,
+     "gas": 70214,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": "member 200 is credited",
+     "to": "PullPayout",
+     "call": "credit(Member200)",
+     "ok": true,
+     "returns": "1",
+     "gas": 2536
+    }
+   ],
+   "compare": null,
+   "sent": 408
+  },
+  "voting": {
+   "id": "voting",
+   "file": "examples/VotingSystem.sol",
+   "title": "Voting system",
+   "example": true,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy VotingSystem",
+     "from": "Alice",
+     "to": null,
+     "call": "new VotingSystem()",
+     "value": "0",
+     "ok": true,
+     "gas": 585069,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "VotingSystem",
+     "call": "createProposal(Build a park)",
+     "value": "0",
+     "ok": true,
+     "gas": 73008,
+     "events": [
+      "ProposalCreated(Build a park)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "ProposalCreated",
+       "args": [
+        "Build a park"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "VotingSystem",
+     "call": "createProposal(Fix the roads)",
+     "value": "0",
+     "ok": true,
+     "gas": 55920,
+     "events": [
+      "ProposalCreated(Fix the roads)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "ProposalCreated",
+       "args": [
+        "Fix the roads"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "only the owner may add",
+     "from": "Bob",
+     "to": "VotingSystem",
+     "call": "createProposal(Bob for mayor)",
+     "value": "0",
+     "ok": false,
+     "gas": 24435,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Only owner can create proposals"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Bob",
+     "to": "VotingSystem",
+     "call": "vote(1)",
+     "value": "0",
+     "ok": true,
+     "gas": 72775,
+     "events": [
+      "Voted(Bob, Fix the roads)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Voted",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "Fix the roads"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Carol",
+     "to": "VotingSystem",
+     "call": "vote(1)",
+     "value": "0",
+     "ok": true,
+     "gas": 55675,
+     "events": [
+      "Voted(Carol, Fix the roads)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Voted",
+       "args": [
+        "0x3325a78425F17a7E487Eb5666b2bFd93aBb06c70",
+        "Fix the roads"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Dave",
+     "to": "VotingSystem",
+     "call": "vote(0)",
+     "value": "0",
+     "ok": true,
+     "gas": 72763,
+     "events": [
+      "Voted(Dave, Build a park)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Voted",
+       "args": [
+        "0xc48B812bB43401392c037381AcA934F4069C0517",
+        "Build a park"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "Bob tries to vote twice",
+     "from": "Bob",
+     "to": "VotingSystem",
+     "call": "vote(0)",
+     "value": "0",
+     "ok": false,
+     "gas": 23684,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "You have already voted"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "a proposal that does not exist",
+     "from": "Mallory",
+     "to": "VotingSystem",
+     "call": "vote(9)",
+     "value": "0",
+     "ok": false,
+     "gas": 25830,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Invalid proposal index"
+     },
+     "valueText": null
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "VotingSystem",
+     "call": "getWinningProposal()",
+     "ok": true,
+     "returns": "Fix the roads",
+     "gas": 11222
+    }
+   ],
+   "compare": null,
+   "sent": 9
+  },
+  "pets": {
+   "id": "pets",
+   "file": "examples/PetAdoption.sol",
+   "title": "Pet adoption",
+   "example": true,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy PetAdoption",
+     "from": "Alice",
+     "to": null,
+     "call": "new PetAdoption()",
+     "value": "0",
+     "ok": true,
+     "gas": 742855,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PetAdoption",
+     "call": "addPet(Biscuit, dog, 0.1 ETH)",
+     "value": "0",
+     "ok": true,
+     "gas": 142916,
+     "events": [
+      "PetAdded(1, Biscuit, dog, 0.1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PetAdded",
+       "args": [
+        "1",
+        "Biscuit",
+        "dog",
+        "100000000000000000"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PetAdoption",
+     "call": "addPet(Miso, cat, 0.05 ETH)",
+     "value": "0",
+     "ok": true,
+     "gas": 125768,
+     "events": [
+      "PetAdded(2, Miso, cat, 0.05 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PetAdded",
+       "args": [
+        "2",
+        "Miso",
+        "cat",
+        "50000000000000000"
+       ]
+      }
+     ],
+     "valueText": null
+    },
+    {
+     "kind": "tx",
+     "note": "Bob pays too little",
+     "from": "Bob",
+     "to": "PetAdoption",
+     "call": "adoptPet(1)",
+     "value": "50000000000000000",
+     "ok": false,
+     "gas": 27971,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Insufficient funds to adopt pet"
+     },
+     "valueText": "0.05 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Bob overpays: the rest comes back",
+     "from": "Bob",
+     "to": "PetAdoption",
+     "call": "adoptPet(1)",
+     "value": "250000000000000000",
+     "ok": true,
+     "gas": 68808,
+     "events": [
+      "PetAdopted(1, Bob, 0.1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PetAdopted",
+       "args": [
+        "1",
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "100000000000000000"
+       ]
+      }
+     ],
+     "valueText": "0.25 ETH"
+    },
+    {
+     "kind": "tx",
+     "note": "Biscuit is taken",
+     "from": "Carol",
+     "to": "PetAdoption",
+     "call": "adoptPet(1)",
+     "value": "100000000000000000",
+     "ok": false,
+     "gas": 25846,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Pet already adopted"
+     },
+     "valueText": "0.1 ETH"
+    },
+    {
+     "kind": "read",
+     "note": null,
+     "to": "PetAdoption",
+     "call": "getPet(1)",
+     "ok": true,
+     "returns": "{id: 1, name: Biscuit, species: dog, adoptionFee: 0.1 ETH, adopted: true, adopter: Bob}",
+     "gas": 15209
+    }
+   ],
+   "compare": null,
+   "sent": 6
+  },
+  "payment": {
+   "id": "payment",
+   "file": "examples/PaymentForWork.sol",
+   "title": "Payment for work, as written",
+   "example": true,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy PaymentForWork",
+     "from": "Alice",
+     "to": null,
+     "call": "new PaymentForWork()",
+     "value": "0",
+     "ok": true,
+     "gas": 449538,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PaymentForWork",
+     "call": "registerWorker(Bob)",
+     "value": "0",
+     "ok": true,
+     "gas": 49761,
+     "events": [
+      "WorkerRegistered(Bob)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "WorkerRegistered",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PaymentForWork",
+     "call": "registerWorker(Carol)",
+     "value": "0",
+     "ok": true,
+     "gas": 49761,
+     "events": [
+      "WorkerRegistered(Carol)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "WorkerRegistered",
+       "args": [
+        "0x3325a78425F17a7E487Eb5666b2bFd93aBb06c70"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "Alice deposits 1 ETH",
+     "from": "Alice",
+     "to": "PaymentForWork",
+     "call": "deposit()",
+     "value": "1000000000000000000",
+     "ok": true,
+     "gas": 23387,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "1 ETH",
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "credit Bob 1 ETH",
+     "from": "Alice",
+     "to": "PaymentForWork",
+     "call": "payWorker(Bob, 1 ETH)",
+     "value": "0",
+     "ok": true,
+     "gas": 50155,
+     "events": [
+      "PaymentSent(Bob, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PaymentSent",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "1000000000000000000"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "credit Carol 1 ETH too: accepted",
+     "from": "Alice",
+     "to": "PaymentForWork",
+     "call": "payWorker(Carol, 1 ETH)",
+     "value": "0",
+     "ok": true,
+     "gas": 50155,
+     "events": [
+      "PaymentSent(Carol, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PaymentSent",
+       "args": [
+        "0x3325a78425F17a7E487Eb5666b2bFd93aBb06c70",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "2000000000000000000"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "Bob withdraws",
+     "from": "Bob",
+     "to": "PaymentForWork",
+     "call": "withdraw()",
+     "value": "0",
+     "ok": true,
+     "gas": 32210,
+     "events": [
+      "Withdrawn(Bob, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Withdrawn",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "1000000000000000000"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "Carol withdraws: nothing left",
+     "from": "Carol",
+     "to": "PaymentForWork",
+     "call": "withdraw()",
+     "value": "0",
+     "ok": false,
+     "gas": 35572,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "empty",
+      "text": "reverted with no reason"
+     },
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "1000000000000000000"
+     }
+    },
+    {
+     "kind": "read",
+     "note": "Carol is still owed",
+     "to": "PaymentForWork",
+     "call": "workers(Carol)",
+     "ok": true,
+     "returns": "[1 ETH, true]",
+     "gas": 4676
+    }
+   ],
+   "compare": null,
+   "sent": 8
+  },
+  "paymentfixed": {
+   "id": "paymentfixed",
+   "file": "examples/PaymentForWorkFixed.sol",
+   "title": "Payment for work, fixed",
+   "example": true,
+   "steps": [
+    {
+     "kind": "deploy",
+     "note": "deploy PaymentForWorkFixed",
+     "from": "Alice",
+     "to": null,
+     "call": "new PaymentForWorkFixed()",
+     "value": "0",
+     "ok": true,
+     "gas": 474417,
+     "events": [],
+     "eventsRaw": [],
+     "address": "0x32dcab0ef3fb2de2fce1d2e0799d36239671f04a"
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PaymentForWorkFixed",
+     "call": "registerWorker(Bob)",
+     "value": "0",
+     "ok": true,
+     "gas": 49822,
+     "events": [
+      "WorkerRegistered(Bob)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "WorkerRegistered",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": null,
+     "from": "Alice",
+     "to": "PaymentForWorkFixed",
+     "call": "registerWorker(Carol)",
+     "value": "0",
+     "ok": true,
+     "gas": 49822,
+     "events": [
+      "WorkerRegistered(Carol)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "WorkerRegistered",
+       "args": [
+        "0x3325a78425F17a7E487Eb5666b2bFd93aBb06c70"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "Alice deposits 1 ETH",
+     "from": "Alice",
+     "to": "PaymentForWorkFixed",
+     "call": "deposit()",
+     "value": "1000000000000000000",
+     "ok": true,
+     "gas": 23365,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": "1 ETH",
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "0"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "credit Bob 1 ETH",
+     "from": "Alice",
+     "to": "PaymentForWorkFixed",
+     "call": "payWorker(Bob, 1 ETH)",
+     "value": "0",
+     "ok": true,
+     "gas": 72526,
+     "events": [
+      "PaymentSent(Bob, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "PaymentSent",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "1000000000000000000"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "credit Carol 1 ETH: refused",
+     "from": "Alice",
+     "to": "PaymentForWorkFixed",
+     "call": "payWorker(Carol, 1 ETH)",
+     "value": "0",
+     "ok": false,
+     "gas": 28685,
+     "events": [],
+     "eventsRaw": [],
+     "error": {
+      "kind": "require",
+      "text": "Not enough unpromised balance"
+     },
+     "valueText": null,
+     "state": {
+      "held": "1000000000000000000",
+      "owed": "1000000000000000000"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "Bob withdraws",
+     "from": "Bob",
+     "to": "PaymentForWorkFixed",
+     "call": "withdraw()",
+     "value": "0",
+     "ok": true,
+     "gas": 33600,
+     "events": [
+      "Withdrawn(Bob, 1 ETH)"
+     ],
+     "eventsRaw": [
+      {
+       "name": "Withdrawn",
+       "args": [
+        "0x5050A4F4b3f9338C3472dcC01A87C76A144b3c9c",
+        "1000000000000000000"
+       ]
+      }
+     ],
+     "valueText": null,
+     "state": {
+      "held": "0",
+      "owed": "0"
+     }
+    }
+   ],
+   "compare": null,
+   "sent": 7
+  }
+ }
+}

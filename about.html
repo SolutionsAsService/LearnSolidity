@@ -1,110 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About Solidity Learning Hub</title>
-  <link rel="stylesheet" href="css/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · Learn Solidity</title>
+<meta name="description" content="How Learn Solidity compiles and runs every contract to produce the figures it prints.">
+<meta property="og:title" content="About · Learn Solidity">
+<meta property="og:description" content="How Learn Solidity compiles and runs every contract to produce the figures it prints.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <header>
-    <div class="container header-container">
-      <h1>About Solidity Learning Hub</h1>
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="beginner.html">Beginners</a></li>
-          <li><a href="advanced.html">Advanced</a></li>
-          <li><a href="security.html">Security</a></li>
-          <li><a href="resources.html">Resources</a></li>
-          <li><a href="about.html" class="active">About</a></li>
-          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
-        </ul>
-      </nav>
-      <button class="theme-switch" id="theme-switcher">Toggle Theme</button>
-    </div>
-  </header>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html" aria-current="page">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">About</p><h1>How this site is made</h1><p class="lede">A free, open-source way to learn Solidity by watching contracts run. No accounts, no tracking, no course to buy.</p></div>
+<section class="lesson" aria-labelledby="h-how"><h2 id="h-how">Every number is a measurement</h2>
+<ol class="numbered">
+  <li>The 16 Solidity files in <code>contracts/</code> are compiled with solc 0.8.28 (optimizer on, 200 runs, Cancun EVM).</li>
+  <li>Each lesson has a script in <code>tools/scenarios.mjs</code>: who deploys, who calls what, with how much ether.</li>
+  <li>The scripts run in EthereumJS, a JavaScript implementation of the Ethereum Virtual Machine, on a fresh chain with five accounts (Alice, Bob, Carol, Dave and Mallory). Every transaction's gas, return value, events and revert reason is recorded in <code>data/runs.json</code>.</li>
+  <li>The pages are written from that file. The text quotes it rather than retyping it.</li>
+</ol>
+<p>Gas figures are for the whole transaction, including the 21,000 base cost every transaction pays; read-only calls show execution gas only and are marked with an asterisk. On a public network your numbers will match only for the same compiler, settings and EVM version.</p></section>
+<section class="lesson" aria-labelledby="h-limits"><h2 id="h-limits">What this site is not</h2>
+<p>It is not an audit and not financial advice. The contracts are teaching code: small, readable, deliberately incomplete. Before you deploy anything that holds real money, have it tested and reviewed.</p></section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
 
-  <main>
-    <div class="container content-container">
-      
-      <!-- Introduction -->
-      <section class="section" id="about-introduction">
-        <h2>Welcome to Solidity Learning Hub</h2>
-        <p>Solidity Learning Hub is a dedicated platform designed to help developers of all skill levels master Solidity, the programming language for smart contracts on Ethereum.</p>
-        <p>Whether you're just starting out or looking to deepen your expertise, our structured guides, security insights, and practical examples will accelerate your journey in blockchain development.</p>
-      </section>
-
-      <!-- Our Mission -->
-      <section class="section" id="mission">
-        <h3>Our Mission</h3>
-        <p>Our goal is to provide high-quality, up-to-date educational content on Solidity programming, blockchain security, and decentralized application (dApp) development. We aim to:</p>
-        <ul>
-          <li>Break down complex Solidity concepts into easy-to-understand lessons.</li>
-          <li>Offer real-world examples and code snippets to enhance practical learning.</li>
-          <li>Educate developers on security best practices for smart contract development.</li>
-          <li>Provide a one-stop resource hub with books, courses, and community support.</li>
-        </ul>
-      </section>
-
-      <!-- Why Learn Solidity? -->
-      <section class="section" id="why-learn-solidity">
-        <h3>Why Learn Solidity?</h3>
-        <p>Solidity is the backbone of smart contract development on Ethereum and other EVM-compatible blockchains. By learning Solidity, you can:</p>
-        <ul>
-          <li>Develop decentralized applications (dApps) that run on Ethereum.</li>
-          <li>Create secure and efficient smart contracts for financial, gaming, and governance applications.</li>
-          <li>Explore career opportunities in blockchain development, DeFi, and Web3.</li>
-          <li>Contribute to the rapidly growing ecosystem of decentralized technologies.</li>
-        </ul>
-      </section>
-
-      <!-- Meet the Team -->
-      <section class="section" id="team">
-        <h3>Meet the Team</h3>
-        <p>Solidity Learning Hub is built and maintained by a passionate group of blockchain developers, security experts, and educators who believe in the power of decentralization and smart contracts.</p>
-        <p>We collaborate with Ethereum developers, security researchers, and educators to ensure the accuracy and quality of our content.</p>
-      </section>
-
-      <!-- Community & Contributions -->
-      <section class="section" id="community">
-        <h3>Join Our Community</h3>
-        <p>Learning Solidity is easier when you’re part of a community. Join us on various platforms to discuss Solidity, ask questions, and share knowledge:</p>
-        <ul>
-          <li><a href="https://ethereum.stackexchange.com/" target="_blank">Ethereum Stack Exchange</a></li>
-          <li><a href="https://discord.com/invite/ethereum" target="_blank">Ethereum Discord</a></li>
-          <li><a href="https://github.com/" target="_blank">GitHub - Contribute to Open Source Solidity Projects</a></li>
-          <li><a href="https://twitter.com/solidity_lang" target="_blank">Follow Solidity on Twitter</a></li>
-        </ul>
-        <p>We also welcome contributions! If you'd like to suggest improvements, report issues, or add new content, feel free to reach out.</p>
-      </section>
-
-      <!-- Contact Information -->
-      <section class="section" id="contact">
-        <h3>Contact Us</h3>
-        <p>Have questions, suggestions, or feedback? Reach out to us:</p>
-        <ul>
-          <li>Email: <a href="mailto:info@soliditylearninghub.com">info@soliditylearninghub.com</a></li>
-          <li>Twitter: <a href="https://twitter.com/solidity_lang" target="_blank">@solidity_lang</a></li>
-          <li>GitHub: <a href="https://github.com/" target="_blank">Contribute on GitHub</a></li>
-        </ul>
-      </section>
-
-      <!-- Conclusion -->
-      <section class="section" id="conclusion">
-        <h3>Start Learning Today</h3>
-        <p>Solidity is an essential skill for blockchain developers. Whether you're a beginner or an expert, Solidity Learning Hub is here to help you master smart contract development.</p>
-        <p>Explore our <a href="resources.html">Resources</a> section, follow our <a href="security.html">Security Best Practices</a>, and start building innovative decentralized applications!</p>
-      </section>
-
-    </div>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
-    </div>
-  </footer>
-  <script src="js/script.js"></script>
 </body>
 </html>

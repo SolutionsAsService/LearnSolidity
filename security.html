@@ -1,229 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solidity Security Best Practices</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <!-- Code syntax highlighting (handled by external JS/CSS files) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
-  <script src="scripts.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security · Learn Solidity</title>
+<meta name="description" content="Each attack below was run against a real contract, then run again against the fixed version.">
+<meta property="og:title" content="Security · Learn Solidity">
+<meta property="og:description" content="Each attack below was run against a real contract, then run again against the fixed version.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <header>
-    <div class="container header-container">
-      <h1>Solidity Security Best Practices</h1>
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="beginner.html">Beginners</a></li>
-          <li><a href="advanced.html">Advanced</a></li>
-          <li><a href="security.html" class="active">Security</a></li>
-          <li><a href="resources.html">Resources</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
-        </ul>
-      </nav>
-      <button class="theme-switch" id="theme-switcher">Toggle Theme</button>
-    </div>
-  </header>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html" aria-current="page">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Security</p><h1>Security: four ways to lose money</h1><p class="lede">Each attack below was run against a real contract, then run again against the fixed version.</p><ol class="toc"><li><a href="#reentrancy">Reentrancy: paying before bookkeeping</a></li><li><a href="#overflow">Overflow is checked</a></li><li><a href="#txorigin">tx.origin is not the caller</a></li><li><a href="#unbounded">Loops that grow</a></li></ol></div>
+<section class="lesson" id="reentrancy" aria-labelledby="h-reentrancy">
+  <h2 id="h-reentrancy"><span class="num">01</span> Reentrancy: paying before bookkeeping</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p><code>VulnerableBank</code> sends ether <em>before</em> it sets the balance to zero. The attacker’s <code>receive()</code> runs during that send and calls <code>withdraw()</code> again, while its balance still reads 1 ETH.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>reentrancy</dt><dd>Calling back into a contract while an earlier call to it is still running, before it has finished updating its records.</dd><dt>revert</dt><dd>A transaction that stops and undoes everything it did. The sender still pays for the gas used up to that point.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/security/Reentrancy.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Reentrancy: a bank that pays before it updates its books, and one that does not.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> VulnerableBank {</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> balances;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> deposit() <span class="k">external</span> <span class="k">payable</span> {</span><span class="ln" style="--i:8">balances[msg.sender] += msg.value;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> withdraw() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="t">uint256</span> amount = balances[msg.sender];</span><span class="ln" style="--i:8"><span class="k">require</span>(amount &gt; <span class="n">0</span>, <span class="s">&quot;Nothing to withdraw&quot;</span>);</span><span class="ln" style="--i:8">(<span class="t">bool</span> ok, ) = msg.sender.call{value: amount}(<span class="s">&quot;&quot;</span>); <span class="c">// interaction first...</span></span><span class="ln" style="--i:8"><span class="k">require</span>(ok, <span class="s">&quot;Transfer failed&quot;</span>);</span><span class="ln" style="--i:8">balances[msg.sender] = <span class="n">0</span>; <span class="c">// ...effect last: too late</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">contract</span> SafeBank {</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> balances;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> deposit() <span class="k">external</span> <span class="k">payable</span> {</span><span class="ln" style="--i:8">balances[msg.sender] += msg.value;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> withdraw() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="t">uint256</span> amount = balances[msg.sender]; <span class="c">// checks</span></span><span class="ln" style="--i:8"><span class="k">require</span>(amount &gt; <span class="n">0</span>, <span class="s">&quot;Nothing to withdraw&quot;</span>);</span><span class="ln" style="--i:8">balances[msg.sender] = <span class="n">0</span>; <span class="c">// effects</span></span><span class="ln" style="--i:8">(<span class="t">bool</span> ok, ) = msg.sender.call{value: amount}(<span class="s">&quot;&quot;</span>); <span class="c">// interactions</span></span><span class="ln" style="--i:8"><span class="k">require</span>(ok, <span class="s">&quot;Transfer failed&quot;</span>);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">interface</span> IBank {</span><span class="ln" style="--i:4"><span class="k">function</span> deposit() <span class="k">external</span> <span class="k">payable</span>;</span><span class="ln" style="--i:4"><span class="k">function</span> withdraw() <span class="k">external</span>;</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @notice Deposits once, then re-enters withdraw() from its receive hook until the bank is empty.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Attacker {</span><span class="ln" style="--i:4">IBank <span class="k">public</span> <span class="k">immutable</span> bank;</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> reentries;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="c">/// One event per re-entry, with what the bank still holds at that moment.</span></span><span class="ln" style="--i:4"><span class="k">event</span> Reentered(<span class="t">uint256</span> depth, <span class="t">uint256</span> bankBalance);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">constructor</span>(IBank b) {</span><span class="ln" style="--i:8">bank = b;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> attack() <span class="k">external</span> <span class="k">payable</span> {</span><span class="ln" style="--i:8">bank.deposit{value: msg.value}();</span><span class="ln" style="--i:8">bank.withdraw();</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">receive</span>() <span class="k">external</span> <span class="k">payable</span> {</span><span class="ln" style="--i:8"><span class="k">if</span> (<span class="t">address</span>(bank).balance &gt;= msg.value &amp;&amp; msg.value &gt; <span class="n">0</span>) {</span><span class="ln" style="--i:12">reentries++;</span><span class="ln" style="--i:12"><span class="k">emit</span> Reentered(reentries, <span class="t">address</span>(bank).balance);</span><span class="ln" style="--i:12">bank.withdraw();</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 4,115,537; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new VulnerableBank()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">174,399</span></td></tr><tr class=" k-tx">
+      <td class="note">Alice deposits 2 ETH</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">VulnerableBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Bob deposits 2 ETH</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">VulnerableBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Carol deposits 2 ETH</td>
+      <td class="who">Carol →</td>
+      <td class="call"><code><span class="to">VulnerableBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Dave deposits 2 ETH</td>
+      <td class="who">Dave →</td>
+      <td class="call"><code><span class="to">VulnerableBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-balance">
+      <td class="note">bank holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>VulnerableBank</code></td>
+      <td class="res"><span class="ret">8 ETH</span></td>
+      <td class="gas"></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Mallory deploys</td>
+      <td class="call"><code>new Attacker(VulnerableBank)</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">224,297</span></td></tr><tr class=" k-tx">
+      <td class="note">Mallory attacks with 1 ETH</td>
+      <td class="who">Mallory →</td>
+      <td class="call"><code><span class="to">Attacker.</span>attack()</code> <span class="val">+1 ETH</span></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Reentered(1, 8 ETH)<br>Reentered(2, 7 ETH)<br>Reentered(3, 6 ETH)<br>Reentered(4, 5 ETH)<br>Reentered(5, 4 ETH)<br>Reentered(6, 3 ETH)<br>Reentered(7, 2 ETH)<br>Reentered(8, 1 ETH)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:3.4%"></span></span><span class="g">141,795</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Attacker.</span>reentries()</code></td>
+      <td class="res"><span class="ret">8</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,260*</span></td></tr><tr class=" k-balance">
+      <td class="note">bank holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>VulnerableBank</code></td>
+      <td class="res"><span class="ret">0 ETH</span></td>
+      <td class="gas"></td></tr><tr class=" k-balance">
+      <td class="note">attacker holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>Attacker</code></td>
+      <td class="res"><span class="ret">9 ETH</span></td>
+      <td class="gas"></td></tr><tr class="is-rev k-tx">
+      <td class="note">Alice tries to withdraw her 2 ETH</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">VulnerableBank.</span>withdraw()</code></td>
+      <td class="res"><span class="rev">reverted: Transfer failed</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:0.7%"></span></span><span class="g">30,423</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new SafeBank()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">174,399</span></td></tr><tr class=" k-tx">
+      <td class="note">Alice deposits 2 ETH</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">SafeBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Bob deposits 2 ETH</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">SafeBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Carol deposits 2 ETH</td>
+      <td class="who">Carol →</td>
+      <td class="call"><code><span class="to">SafeBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-tx">
+      <td class="note">Dave deposits 2 ETH</td>
+      <td class="who">Dave →</td>
+      <td class="call"><code><span class="to">SafeBank.</span>deposit()</code> <span class="val">+2 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,477</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Mallory deploys</td>
+      <td class="call"><code>new Attacker(SafeBank)</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">224,297</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">Mallory attacks SafeBank with 1 ETH</td>
+      <td class="who">Mallory →</td>
+      <td class="call"><code><span class="to">Attacker (2nd).</span>attack()</code> <span class="val">+1 ETH</span></td>
+      <td class="res"><span class="rev">reverted: Transfer failed</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:2.1%"></span></span><span class="g">85,898</span></td></tr><tr class=" k-balance">
+      <td class="note">safe bank holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>SafeBank</code></td>
+      <td class="res"><span class="ret">8 ETH</span></td>
+      <td class="gas"></td></tr></tbody></table></div></figure>
+  <figure class="owed"><svg viewBox="0 0 640 210" role="img" aria-labelledby="re-t re-d"><title id="re-t">What the bank held at each re-entry, inside one transaction</title><desc id="re-d">re-entry 1: 8 ETH; re-entry 2: 7 ETH; re-entry 3: 6 ETH; re-entry 4: 5 ETH; re-entry 5: 4 ETH; re-entry 6: 3 ETH; re-entry 7: 2 ETH; re-entry 8: 1 ETH; after the transaction: 0 ETH.</desc><line x1="46" x2="632" y1="180" y2="180" class="c-grid"/><text x="40" y="184" text-anchor="end" class="c-lab">0 ETH</text><line x1="46" x2="632" y1="102" y2="102" class="c-grid"/><text x="40" y="106" text-anchor="end" class="c-lab">4 ETH</text><line x1="46" x2="632" y1="24" y2="24" class="c-grid"/><text x="40" y="28" text-anchor="end" class="c-lab">8 ETH</text><rect x="49.0" y="24.0" width="59.1" height="156.0" class="c-held"/><text x="78.6" y="19.0" text-anchor="middle" class="c-lab">8</text><text x="78.6" y="194" text-anchor="middle" class="c-lab">1</text><rect x="114.1" y="43.5" width="59.1" height="136.5" class="c-held"/><text x="143.7" y="38.5" text-anchor="middle" class="c-lab">7</text><text x="143.7" y="194" text-anchor="middle" class="c-lab">2</text><rect x="179.2" y="63.0" width="59.1" height="117.0" class="c-held"/><text x="208.8" y="58.0" text-anchor="middle" class="c-lab">6</text><text x="208.8" y="194" text-anchor="middle" class="c-lab">3</text><rect x="244.3" y="82.5" width="59.1" height="97.5" class="c-held"/><text x="273.9" y="77.5" text-anchor="middle" class="c-lab">5</text><text x="273.9" y="194" text-anchor="middle" class="c-lab">4</text><rect x="309.4" y="102.0" width="59.1" height="78.0" class="c-held"/><text x="339.0" y="97.0" text-anchor="middle" class="c-lab">4</text><text x="339.0" y="194" text-anchor="middle" class="c-lab">5</text><rect x="374.6" y="121.5" width="59.1" height="58.5" class="c-held"/><text x="404.1" y="116.5" text-anchor="middle" class="c-lab">3</text><text x="404.1" y="194" text-anchor="middle" class="c-lab">6</text><rect x="439.7" y="141.0" width="59.1" height="39.0" class="c-held"/><text x="469.2" y="136.0" text-anchor="middle" class="c-lab">2</text><text x="469.2" y="194" text-anchor="middle" class="c-lab">7</text><rect x="504.8" y="160.5" width="59.1" height="19.5" class="c-held"/><text x="534.3" y="155.5" text-anchor="middle" class="c-lab">1</text><text x="534.3" y="194" text-anchor="middle" class="c-lab">8</text><rect x="569.9" y="180.0" width="59.1" height="0.0" class="c-held"/><text x="599.4" y="175.0" text-anchor="middle" class="c-lab">0</text><text x="599.4" y="194" text-anchor="middle" class="c-lab">after</text></svg>
+<figcaption>Inside Mallory’s one transaction: what <code>VulnerableBank</code> held each time the attacker re-entered <code>withdraw()</code> (from 8 <code>Reentered</code> events), then after it finished.</figcaption></figure>
+  <p class="after"><strong>What it shows.</strong> One transaction re-entered <b>8</b> times. The bank went from <b>8 ETH</b> to <b>0 ETH</b>; the attacker contract ended holding <b>9 ETH</b>, its own 1 ETH plus everyone else’s. Alice’s honest withdrawal then failed (“Transfer failed”). <code>SafeBank</code> zeroes the balance first (checks, effects, then interactions): the same attack reverted and it still holds <b>8 ETH</b>. Older tutorials write the vulnerable version with <code>balances[msg.sender] -= amount</code>; under 0.8 that underflows on re-entry and reverts, which hides the bug instead of showing it.</p>
+</section>
+<section class="lesson" id="overflow" aria-labelledby="h-overflow">
+  <h2 id="h-overflow"><span class="num">02</span> Overflow is checked</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>A <code>uint8</code> holds 0 to 255. Before 0.8, 255 + 1 silently became 0. Now it reverts, unless you ask for the old behaviour with <code>unchecked</code>.</p></div>
+    <figure class="code"><figcaption><code>contracts/security/Overflow.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Overflow: checked by default since 0.8, wrapping only inside unchecked.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Overflow {</span><span class="ln" style="--i:4"><span class="t">uint8</span> <span class="k">public</span> small = <span class="n">255</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> addChecked() <span class="k">external</span> {</span><span class="ln" style="--i:8">small += <span class="n">1</span>; <span class="c">// reverts with Panic(0x11)</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> addUnchecked() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">unchecked</span> {</span><span class="ln" style="--i:12">small += <span class="n">1</span>; <span class="c">// wraps to 0</span></span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 4,115,537; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Overflow()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">134,362</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Overflow.</span>small()</code></td>
+      <td class="res"><span class="ret">255</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,321*</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">255 + 1, checked</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Overflow.</span>addChecked()</code></td>
+      <td class="res"><span class="rev">reverted: Panic(0x11): arithmetic overflow or underflow</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:0.6%"></span></span><span class="g">23,403</span></td></tr><tr class=" k-tx">
+      <td class="note">255 + 1, unchecked</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Overflow.</span>addUnchecked()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:0.5%"></span></span><span class="g">21,442</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Overflow.</span>small()</code></td>
+      <td class="res"><span class="ret">0</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,321*</span></td></tr></tbody></table></div></figure>
   
-  <main>
-    <div class="container content-container">
-      <!-- Introduction -->
-      <section class="section" id="introduction">
-        <h2>Introduction</h2>
-        <p>Solidity is a powerful language for writing smart contracts, but with that power comes responsibility. In this guide, we explore the relationship between Solidity and security, detailing common vulnerabilities, best practices, and code examples to help you develop robust and secure smart contracts.</p>
-      </section>
-      
-      <!-- Common Vulnerabilities -->
-      <section class="section" id="common-vulnerabilities">
-        <h3>Common Vulnerabilities in Solidity</h3>
-        <p>Some of the most common vulnerabilities in Solidity smart contracts include:</p>
-        <ul>
-          <li><strong>Reentrancy:</strong> Occurs when a contract makes an external call to another untrusted contract before it resolves its state changes.</li>
-          <li><strong>Integer Overflows/Underflows:</strong> Can happen when arithmetic operations exceed the maximum or minimum value representable.</li>
-          <li><strong>Unchecked Call Return Values:</strong> Failing to verify the success of external calls can lead to unexpected behavior.</li>
-          <li><strong>Access Control Issues:</strong> Improper implementation of function access can allow unauthorized users to perform sensitive operations.</li>
-          <li><strong>Denial of Service (DoS):</strong> Malicious actors might block functions by causing excessive gas usage or other failures.</li>
-        </ul>
-      </section>
-      
-      <!-- Reentrancy and Mitigation -->
-      <section class="section" id="reentrancy">
-        <h3>Reentrancy and Its Mitigation</h3>
-        <p>The reentrancy vulnerability can be dangerous when external calls are made before state updates. The <strong>Checks-Effects-Interactions</strong> pattern is essential to prevent this.</p>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract VulnerableContract {
-    mapping(address => uint256) public balances;
-
-    function withdraw(uint256 amount) public {
-        require(balances[msg.sender] >= amount, "Insufficient balance");
-        // Interaction before state update (vulnerable to reentrancy)
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Transfer failed");
-        balances[msg.sender] -= amount;
-    }
-}
-
-contract SecureContract {
-    mapping(address => uint256) public balances;
-    bool private locked;
-
-    modifier noReentrancy() {
-        require(!locked, "Reentrant call detected!");
-        locked = true;
-        _;
-        locked = false;
-    }
-
-    function withdraw(uint256 amount) public noReentrancy {
-        require(balances[msg.sender] >= amount, "Insufficient balance");
-        // Update state before interaction
-        balances[msg.sender] -= amount;
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Transfer failed");
-    }
-}
-        </code></pre>
-        <p>In the secure contract, the state is updated before the external call, and a reentrancy guard is applied to prevent multiple simultaneous entries.</p>
-      </section>
-      
-      <!-- Integer Overflow/Underflow -->
-      <section class="section" id="integer-overflow">
-        <h3>Integer Overflows and Underflows</h3>
-        <p>Although Solidity 0.8.0 and later include built-in overflow and underflow protection, it's important to be aware of these issues, especially when using earlier versions or performing complex arithmetic.</p>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract SafeMathExample {
-    // Solidity 0.8.0+ automatically checks for overflow/underflow.
-    function add(uint256 a, uint256 b) public pure returns (uint256) {
-        return a + b;
-    }
-}
-        </code></pre>
-        <p>For earlier Solidity versions, consider using the OpenZeppelin SafeMath library to safely handle arithmetic operations.</p>
-      </section>
-      
-      <!-- Access Control -->
-      <section class="section" id="access-control">
-        <h3>Access Control</h3>
-        <p>Proper access control ensures that only authorized users can execute sensitive functions. The following example demonstrates using a modifier to enforce ownership restrictions.</p>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract Ownable {
-    address public owner;
-
-    constructor() {
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not the owner");
-        _;
-    }
-
-    function sensitiveOperation() public onlyOwner {
-        // Code that only the owner can execute
-    }
-}
-        </code></pre>
-        <p>Enhancing access control by using well-audited libraries (such as OpenZeppelin's Ownable) further strengthens contract security.</p>
-      </section>
-      
-      <!-- External Calls and Fallbacks -->
-      <section class="section" id="external-calls">
-        <h3>Handling External Calls and Fallbacks</h3>
-        <p>When calling external contracts, always check for success and handle failures gracefully. Avoid assuming that an external call will always succeed.</p>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract ExternalCaller {
-    function callExternal(address target, bytes memory data) public returns (bool) {
-        (bool success, ) = target.call(data);
-        require(success, "External call failed");
-        return success;
-    }
-}
-        </code></pre>
-        <p>Additionally, define fallback and receive functions to properly manage incoming transactions.</p>
-      </section>
-      
-      <!-- Upgradable Contracts and Security -->
-      <section class="section" id="upgradable-contracts">
-        <h3>Upgradable Contracts and Security Considerations</h3>
-        <p>Upgradeable contracts allow you to modify contract logic without losing state, but they introduce security challenges. Key points include:</p>
-        <ul>
-          <li>Use proxy patterns carefully to separate storage from logic.</li>
-          <li>Maintain strict access control on upgrade functions.</li>
-          <li>Perform thorough testing and audits during upgrades.</li>
-        </ul>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract LogicContract {
-    uint256 public data;
-    function setData(uint256 _data) public {
-        data = _data;
-    }
-}
-
-contract Proxy {
-    address public implementation;
-    address public admin;
-
-    constructor(address _implementation) {
-        implementation = _implementation;
-        admin = msg.sender;
-    }
-
-    function upgrade(address newImplementation) public {
-        require(msg.sender == admin, "Only admin can upgrade");
-        implementation = newImplementation;
-    }
-
-    fallback() external payable {
-        address impl = implementation;
-        require(impl != address(0));
-        assembly {
-          let ptr := mload(0x40)
-          calldatacopy(ptr, 0, calldatasize())
-          let result := delegatecall(gas(), impl, ptr, calldatasize(), 0, 0)
-          let size := returndatasize()
-          returndatacopy(ptr, 0, size)
-          switch result
-          case 0 { revert(ptr, size) }
-          default { return(ptr, size) }
-        }
-    }
-}
-        </code></pre>
-        <p>This example demonstrates a basic proxy pattern, highlighting the importance of secure upgradeability mechanisms.</p>
-      </section>
-      
-      <!-- Conclusion -->
-      <section class="section" id="conclusion">
-        <h3>Conclusion</h3>
-        <p>Security is a critical aspect of Solidity development. By understanding common vulnerabilities and applying best practices, you can build smart contracts that are robust against attacks. Always stay updated with the latest security recommendations and perform thorough audits on your contracts.</p>
-      </section>
-    </div>
-  </main>
+  <p class="after"><strong>What it shows.</strong> The checked addition reverted with <code>Panic(0x11): arithmetic overflow or underflow</code>. The unchecked one succeeded and the value wrapped from <b>255</b> to <b>0</b>. Use <code>unchecked</code> only where you can prove the value cannot overflow.</p>
+</section>
+<section class="lesson" id="txorigin" aria-labelledby="h-txorigin">
+  <h2 id="h-txorigin"><span class="num">03</span> tx.origin is not the caller</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p><code>tx.origin</code> is the account that signed the whole transaction; <code>msg.sender</code> is whoever called this function. A wallet that trusts <code>tx.origin</code> trusts every contract its owner touches.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>tx.origin</dt><dd>The account that signed the whole transaction, however many contracts it passed through on the way.</dd><dt>msg.sender</dt><dd>The address that called this function directly: a person’s account or another contract.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/security/TxOrigin.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title tx.origin is not the caller: a wallet that checks the wrong one.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> OriginWallet {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> <span class="k">immutable</span> owner = msg.sender;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">receive</span>() <span class="k">external</span> <span class="k">payable</span> {}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> transferTo(<span class="t">address</span> <span class="k">payable</span> to, <span class="t">uint256</span> amount) <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(tx.origin == owner, <span class="s">&quot;Not owner&quot;</span>); <span class="c">// should be msg.sender</span></span><span class="ln" style="--i:8">to.transfer(amount);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">contract</span> SenderWallet {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> <span class="k">immutable</span> owner = msg.sender;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">receive</span>() <span class="k">external</span> <span class="k">payable</span> {}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> transferTo(<span class="t">address</span> <span class="k">payable</span> to, <span class="t">uint256</span> amount) <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(msg.sender == owner, <span class="s">&quot;Not owner&quot;</span>);</span><span class="ln" style="--i:8">to.transfer(amount);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">interface</span> IWallet {</span><span class="ln" style="--i:4"><span class="k">function</span> transferTo(<span class="t">address</span> <span class="k">payable</span> to, <span class="t">uint256</span> amount) <span class="k">external</span>;</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @notice A &quot;free airdrop&quot; the owner is tricked into calling; it forwards the call to the wallet.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Phisher {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">payable</span> <span class="k">public</span> <span class="k">immutable</span> thief = <span class="k">payable</span>(msg.sender);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> claimAirdrop(IWallet wallet) <span class="k">external</span> {</span><span class="ln" style="--i:8">wallet.transferTo(thief, <span class="t">address</span>(wallet).balance);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 4,115,537; deploys as numbers only</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new OriginWallet()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">146,553</span></td></tr><tr class=" k-tx">
+      <td class="note">Alice funds her wallet</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">OriginWallet.</span>send ether</code> <span class="val">+5 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:0.5%"></span></span><span class="g">21,055</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Mallory deploys</td>
+      <td class="call"><code>new Phisher()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">133,169</span></td></tr><tr class=" k-tx">
+      <td class="note">Alice &quot;claims an airdrop&quot;</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Phisher.</span>claimAirdrop(OriginWallet)</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:0.8%"></span></span><span class="g">34,406</span></td></tr><tr class=" k-balance">
+      <td class="note">wallet holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>OriginWallet</code></td>
+      <td class="res"><span class="ret">0 ETH</span></td>
+      <td class="gas"></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new SenderWallet()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">146,553</span></td></tr><tr class=" k-tx">
+      <td class="note">Alice funds the fixed wallet</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">SenderWallet.</span>send ether</code> <span class="val">+5 ETH</span></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:0.5%"></span></span><span class="g">21,055</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">same trick, msg.sender check</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Phisher.</span>claimAirdrop(SenderWallet)</code></td>
+      <td class="res"><span class="rev">reverted: Not owner</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:0.6%"></span></span><span class="g">25,099</span></td></tr><tr class=" k-balance">
+      <td class="note">fixed wallet holds</td>
+      <td class="who">balance</td>
+      <td class="call"><code>SenderWallet</code></td>
+      <td class="res"><span class="ret">5 ETH</span></td>
+      <td class="gas"></td></tr></tbody></table></div></figure>
   
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
-    </div>
-  </footer>
-    <script src="js/script.js"></script>
+  <p class="after"><strong>What it shows.</strong> Alice called a fake “airdrop” contract, which called her wallet. The wallet saw <code>tx.origin == Alice</code> and paid: it holds <b>0 ETH</b>. The fixed wallet checks <code>msg.sender</code>, which was the phishing contract, and refused (“Not owner”); it still holds <b>5 ETH</b>.</p>
+</section>
+<section class="lesson" id="unbounded" aria-labelledby="h-unbounded">
+  <h2 id="h-unbounded"><span class="num">04</span> Loops that grow</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p><code>payout()</code> loops over every member and writes to each one’s credit. Every <code>join()</code> makes the next payout more expensive, and a block has a gas limit (30,000,000 on the chain used here).</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>gas</dt><dd>The unit of work the network charges for. Every operation has a fixed gas cost; storing data is the expensive part.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/security/Unbounded.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title An unbounded loop: every new member makes payout() cost more.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Unbounded {</span><span class="ln" style="--i:4"><span class="t">address</span>[] <span class="k">public</span> members;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> credit;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> join() <span class="k">external</span> {</span><span class="ln" style="--i:8">members.push(msg.sender);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> payout() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">for</span> (<span class="t">uint256</span> i = <span class="n">0</span>; i &lt; members.length; i++) {</span><span class="ln" style="--i:12">credit[members[i]] += <span class="n">1</span>;</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title The fix: pay out by bookkeeping, and let each member pull their own share.</span></span><span class="ln" style="--i:0"><span class="c">/// payout() is one storage write however many members there are; claim() touches only the caller.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> PullPayout {</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">bool</span>) <span class="k">public</span> isMember;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> claimedRounds;</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> rounds;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> credit;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> join() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(!isMember[msg.sender], <span class="s">&quot;Already a member&quot;</span>);</span><span class="ln" style="--i:8">isMember[msg.sender] = true;</span><span class="ln" style="--i:8">claimedRounds[msg.sender] = rounds; <span class="c">// only rounds after joining count</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> payout() <span class="k">external</span> {</span><span class="ln" style="--i:8">rounds += <span class="n">1</span>;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> claim() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(isMember[msg.sender], <span class="s">&quot;Not a member&quot;</span>);</span><span class="ln" style="--i:8">credit[msg.sender] += rounds - claimedRounds[msg.sender];</span><span class="ln" style="--i:8">claimedRounds[msg.sender] = rounds;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 4,115,537; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Unbounded()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">175,683</span></td></tr><tr class=" k-tx">
+      <td class="note">member 1 joins</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>join()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.6%"></span></span><span class="g">65,481</span></td></tr><tr class=" k-tx">
+      <td class="note">payout with 1 member</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,073</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 10 join (one join() each, not listed) · <b>9</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">payout with 10 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:6.2%"></span></span><span class="g">253,597</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 11 to 50 join (one join() each, not listed) · <b>40</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">payout with 50 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:26.5%"></span></span><span class="g">1,089,137</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 51 to 200 join (one join() each, not listed) · <b>150</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">payout with 200 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">4,115,537</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new PullPayout()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">219,076</span></td></tr><tr class=" k-tx">
+      <td class="note">member 1 joins</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">PullPayout.</span>join()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,010</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 200 join (not listed) · <b>199</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">pull payout with 200 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">PullPayout.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,451</span></td></tr><tr class=" k-tx">
+      <td class="note">member 200 claims their share</td>
+      <td class="who">Member200 →</td>
+      <td class="call"><code><span class="to">PullPayout.</span>claim()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.7%"></span></span><span class="g">70,214</span></td></tr><tr class=" k-read">
+      <td class="note">member 200 is credited</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">PullPayout.</span>credit(Member200)</code></td>
+      <td class="res"><span class="ret">1</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,536*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> Each member here is a different account, as in real use. The payout cost <b>48,073</b> gas with 1 member and <b>4,115,537</b> with 200: about <b>20,176</b> more for every member who joins. At that rate a payout would pass the 30,000,000 block limit at roughly <b>1,482</b> members; from then on it could not run at all, and nobody would ever be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share: the payout cost <b>43,451</b> gas with the same 200 members, and a claim <b>70,214</b>, whatever the size of the list.</p>
+</section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+
 </body>
 </html>

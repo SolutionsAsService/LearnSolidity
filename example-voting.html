@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voting system · Examples · Learn Solidity</title>
+<meta name="description" content="The owner creates proposals; each address votes once.">
+<meta property="og:title" content="Voting system · Examples · Learn Solidity">
+<meta property="og:description" content="The owner creates proposals; each address votes once.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html" aria-current="page">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker"><a href="examples.html">Examples</a></p><h1>Voting system</h1><p class="lede">The owner creates proposals; each address votes once.</p>
+<p><a class="btn btn--ghost" href="playground.html?c=VotingSystem">Run it yourself <span class="muted">(882 KB download)</span></a></p></div>
+<section class="lesson" aria-labelledby="h-run"><h2 id="h-run">What happened when it ran</h2><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>transaction</dt><dd>A signed message that changes the chain: deploys a contract, calls a function or sends ether. It costs gas.</dd><dt>revert</dt><dd>A transaction that stops and undoes everything it did. The sender still pays for the gas used up to that point.</dd><dt>event</dt><dd>A log line a contract emits. Apps listen for events; contracts cannot read them.</dd></dl></aside><figure class="trace"><figcaption>The run <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 73,008; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new VotingSystem()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">585,069</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>createProposal(Build a park)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">ProposalCreated(Build a park)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">73,008</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>createProposal(Fix the roads)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">ProposalCreated(Fix the roads)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:76.6%"></span></span><span class="g">55,920</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">only the owner may add</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>createProposal(Bob for mayor)</code></td>
+      <td class="res"><span class="rev">reverted: Only owner can create proposals</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:33.5%"></span></span><span class="g">24,435</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>vote(1)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Voted(Bob, Fix the roads)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:99.7%"></span></span><span class="g">72,775</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Carol →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>vote(1)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Voted(Carol, Fix the roads)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:76.3%"></span></span><span class="g">55,675</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Dave →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>vote(0)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Voted(Dave, Build a park)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:99.7%"></span></span><span class="g">72,763</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">Bob tries to vote twice</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>vote(0)</code></td>
+      <td class="res"><span class="rev">reverted: You have already voted</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:32.4%"></span></span><span class="g">23,684</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">a proposal that does not exist</td>
+      <td class="who">Mallory →</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>vote(9)</code></td>
+      <td class="res"><span class="rev">reverted: Invalid proposal index</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:35.4%"></span></span><span class="g">25,830</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">VotingSystem.</span>getWinningProposal()</code></td>
+      <td class="res"><span class="ret">Fix the roads</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">11,222*</span></td></tr></tbody></table></div></figure><p class="after"><strong>What it shows.</strong> Three votes, two refusals: voting twice reverted with “You have already voted”, and an index that does not exist with “Invalid proposal index”. <code>getWinningProposal()</code> returned <b>Fix the roads</b>. Note what it does with a tie: it keeps the first proposal with the most votes. And the loop in it grows with the number of proposals, like the payout on the security page.</p></section>
+
+<section class="lesson" aria-labelledby="h-src"><h2 id="h-src">The contract</h2><figure class="code"><figcaption><code>contracts/examples/VotingSystem.sol</code> · as in the original repository</figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">20</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0">/**</span><span class="ln" style="--i:1">* @title Voting System</span><span class="ln" style="--i:1">* @dev This <span class="k">contract</span> allows users to create proposals and vote on them.</span><span class="ln" style="--i:1">*/</span><span class="ln" style="--i:0"><span class="k">contract</span> VotingSystem {</span><span class="ln" style="--i:4"><span class="k">struct</span> Proposal {</span><span class="ln" style="--i:8"><span class="t">string</span> name; <span class="c">// The name of the proposal</span></span><span class="ln" style="--i:8"><span class="t">uint</span> voteCount; <span class="c">// Number of votes received</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> owner;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">bool</span>) <span class="k">public</span> hasVoted; <span class="c">// Tracks if an address has voted</span></span><span class="ln" style="--i:4">Proposal[] <span class="k">public</span> proposals; <span class="c">// Array of proposals</span></span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">event</span> ProposalCreated(<span class="t">string</span> name);</span><span class="ln" style="--i:4"><span class="k">event</span> Voted(<span class="t">address</span> voter, <span class="t">string</span> proposal);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4">/**</span><span class="ln" style="--i:5">* @dev Constructor initializes the <span class="k">contract</span> owner.</span><span class="ln" style="--i:5">*/</span><span class="ln" style="--i:4"><span class="k">constructor</span>() {</span><span class="ln" style="--i:8">owner = msg.sender; <span class="c">// Set the contract deployer as the owner</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4">/**</span><span class="ln" style="--i:5">* @dev Creates a <span class="k">new</span> proposal.</span><span class="ln" style="--i:5">* @param proposalName Name of the proposal.</span><span class="ln" style="--i:5">*/</span><span class="ln" style="--i:4"><span class="k">function</span> createProposal(<span class="t">string</span> <span class="k">memory</span> proposalName) <span class="k">public</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(msg.sender == owner, <span class="s">&quot;Only owner can create proposals&quot;</span>);</span><span class="ln" style="--i:8">proposals.push(Proposal({ name: proposalName, voteCount: <span class="n">0</span> }));</span><span class="ln" style="--i:8"><span class="k">emit</span> ProposalCreated(proposalName);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4">/**</span><span class="ln" style="--i:5">* @dev Allows users to vote <span class="k">for</span> a proposal.</span><span class="ln" style="--i:5">* @param proposalIndex The index of the proposal in the array.</span><span class="ln" style="--i:5">*/</span><span class="ln" style="--i:4"><span class="k">function</span> vote(<span class="t">uint</span> proposalIndex) <span class="k">public</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(!hasVoted[msg.sender], <span class="s">&quot;You have already voted&quot;</span>);</span><span class="ln" style="--i:8"><span class="k">require</span>(proposalIndex &lt; proposals.length, <span class="s">&quot;Invalid proposal index&quot;</span>);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:8">proposals[proposalIndex].voteCount++;</span><span class="ln" style="--i:8">hasVoted[msg.sender] = true;</span><span class="ln" style="--i:8"> </span><span class="ln" style="--i:8"><span class="k">emit</span> Voted(msg.sender, proposals[proposalIndex].name);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4">/**</span><span class="ln" style="--i:5">* @dev Returns the winning proposal.</span><span class="ln" style="--i:5">* @<span class="k">return</span> winningName The name of the proposal with the most votes.</span><span class="ln" style="--i:5">*/</span><span class="ln" style="--i:4"><span class="k">function</span> getWinningProposal() <span class="k">public</span> <span class="k">view</span> <span class="k">returns</span> (<span class="t">string</span> <span class="k">memory</span> winningName) {</span><span class="ln" style="--i:8"><span class="k">require</span>(proposals.length &gt; <span class="n">0</span>, <span class="s">&quot;No proposals available&quot;</span>);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:8"><span class="t">uint</span> winningVoteCount = <span class="n">0</span>;</span><span class="ln" style="--i:8"><span class="t">uint</span> winningIndex = <span class="n">0</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:8"><span class="k">for</span> (<span class="t">uint</span> i = <span class="n">0</span>; i &lt; proposals.length; i++) {</span><span class="ln" style="--i:12"><span class="k">if</span> (proposals[i].voteCount &gt; winningVoteCount) {</span><span class="ln" style="--i:16">winningVoteCount = proposals[i].voteCount;</span><span class="ln" style="--i:16">winningIndex = i;</span><span class="ln" style="--i:12">}</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:8"><span class="k">return</span> proposals[winningIndex].name;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure></section>
+
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+
+</body>
+</html>

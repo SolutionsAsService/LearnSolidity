@@ -1,145 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solidity Learning Hub - Advanced Topics</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
-  <script src="scripts.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advanced · Learn Solidity</title>
+<meta name="description" content="Gas is the price of every line. These four contracts measure where it goes, including one popular trick that no longer helps.">
+<meta property="og:title" content="Advanced · Learn Solidity">
+<meta property="og:description" content="Gas is the price of every line. These four contracts measure where it goes, including one popular trick that no longer helps.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <header>
-    <div class="container header-container">
-      <h1>Solidity Learning Hub - Advanced</h1>
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="beginner.html">Beginners</a></li>
-          <li><a href="advanced.html" class="active">Advanced</a></li>
-          <li><a href="security.html">Security</a></li>
-          <li><a href="resources.html">Resources</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
-        </ul>
-      </nav>
-      <button class="theme-switch" id="theme-switcher">Toggle Theme</button>
-    </div>
-  </header>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html" aria-current="page">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Advanced</p><h1>Advanced: paying less, reusing more</h1><p class="lede">Gas is the price of every line. These four contracts measure where it goes, including one popular trick that no longer helps.</p><ol class="toc"><li><a href="#errors">Custom errors are cheaper</a></li><li><a href="#packing">Pack your storage</a></li><li><a href="#inheritance">Inheritance and interfaces</a></li><li><a href="#loops">unchecked in loops</a></li></ol></div>
+<section class="lesson" id="errors" aria-labelledby="h-errors">
+  <h2 id="h-errors"><span class="num">01</span> Custom errors are cheaper</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>A custom error (<code>error NotOwner(address caller)</code>) replaces a require string. The string has to be stored in the contract; the error is a 4-byte code plus arguments.</p></div>
+    <figure class="code"><figcaption><code>contracts/advanced/Errors.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Two ways to refuse: a require string and a custom error.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> RequireString {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> <span class="k">immutable</span> owner = msg.sender;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> guarded() <span class="k">external</span> <span class="k">view</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(msg.sender == owner, <span class="s">&quot;Only the owner may call this <span class="k">function</span>&quot;</span>);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">contract</span> CustomError {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> <span class="k">immutable</span> owner = msg.sender;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">error</span> NotOwner(<span class="t">address</span> caller);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> guarded() <span class="k">external</span> <span class="k">view</span> {</span><span class="ln" style="--i:8"><span class="k">if</span> (msg.sender != owner) <span class="k">revert</span> NotOwner(msg.sender);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 88,096; deploys as numbers only</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new RequireString()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">123,679</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new CustomError()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">109,275</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">refused with a string</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">RequireString.</span>guarded()</code></td>
+      <td class="res"><span class="rev">reverted: Only the owner may call this function</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:24.2%"></span></span><span class="g">21,344</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">refused with a custom error</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">CustomError.</span>guarded()</code></td>
+      <td class="res"><span class="rev">reverted: NotOwner(Bob)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:24.2%"></span></span><span class="g">21,283</span></td></tr></tbody></table></div></figure>
   
-  <main>
-    <div class="container content-container">
-      <section class="section" id="intro">
-        <h2>Advanced Solidity Concepts</h2>
-        <p>Explore Solidity’s advanced features to create efficient, secure, and scalable smart contracts.</p>
-      </section>
-
-      <section class="section" id="inheritance">
-        <h3>Inheritance and Abstract Contracts</h3>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-abstract contract Base {
-    function someFunction() public virtual;
-}
-contract Derived is Base {
-    function someFunction() public override {
-        // Implementation
-    }
-}
-        </code></pre>
-      </section>
-
-      <section class="section" id="modifiers">
-        <h3>Function Modifiers and Custom Errors</h3>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-contract Secure {
-    address owner;
-    error NotAuthorized();
-    modifier onlyOwner() {
-        if (msg.sender != owner) revert NotAuthorized();
-        _;
-    }
-}
-        </code></pre>
-      </section>
-
-      <section class="section" id="libraries">
-        <h3>Libraries and Interfaces</h3>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-library MathLib {
-    function add(uint a, uint b) internal pure returns (uint) {
-        return a + b;
-    }
-}
-interface ICounter {
-    function increment() external;
-    function getCount() external view returns (uint);
-}
-        </code></pre>
-      </section>
-
-      <section class="section" id="contract-interaction">
-        <h3>Contract Interactions and Oracles</h3>
-        <pre><code class="solidity">
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-interface IPriceFeed {
-    function getLatestPrice() external view returns (int);
-}
-contract PriceConsumer {
-    IPriceFeed priceFeed;
-    constructor(address feedAddress) {
-        priceFeed = IPriceFeed(feedAddress);
-    }
-    function getPrice() public view returns (int) {
-        return priceFeed.getLatestPrice();
-    }
-}
-        </code></pre>
-      </section>
-
-      <section class="section" id="security">
-        <h3>Security Best Practices</h3>
-        <ul>
-          <li>Use Checks-Effects-Interactions pattern.</li>
-          <li>Apply reentrancy guards.</li>
-          <li>Implement circuit breakers.</li>
-          <li>Conduct regular audits.</li>
-        </ul>
-        <pre><code class="solidity">
-// Reentrancy Guard
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-contract ReentrancyGuard {
-    bool private locked;
-    modifier noReentrancy() {
-        require(!locked, "Reentrant call detected!");
-        locked = true;
-        _;
-        locked = false;
-    }
-}
-        </code></pre>
-      </section>
-
-      <section class="section" id="conclusion">
-        <h3>Conclusion</h3>
-        <p>Mastering Solidity’s advanced topics ensures you develop robust and efficient smart contracts.</p>
-      </section>
-    </div>
-  </main>
+  <p class="after"><strong>What it shows.</strong> Deploying the custom-error version cost <b>109,275</b> gas instead of <b>123,679</b> (12% less). At call time the difference is small: <b>21,283</b> against <b>21,344</b>. And the error carries data: the revert told us exactly who was refused, <code>NotOwner(Bob)</code>.</p>
+</section>
+<section class="lesson" id="packing" aria-labelledby="h-packing">
+  <h2 id="h-packing"><span class="num">02</span> Pack your storage</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>Storage comes in 32-byte slots. Three <code>uint256</code> fields take three slots; a <code>uint64</code>, a <code>uint64</code> and a <code>uint128</code> fit in one.</p></div>
+    <figure class="code"><figcaption><code>contracts/advanced/Packing.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Storage packing: the same three fields, two layouts.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Loose {</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> a; <span class="c">// slot 0</span></span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> b; <span class="c">// slot 1</span></span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> c; <span class="c">// slot 2</span></span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> setAll(<span class="t">uint256</span> x, <span class="t">uint256</span> y, <span class="t">uint256</span> z) <span class="k">external</span> {</span><span class="ln" style="--i:8">a = x;</span><span class="ln" style="--i:8">b = y;</span><span class="ln" style="--i:8">c = z;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">contract</span> Packed {</span><span class="ln" style="--i:4"><span class="t">uint64</span> <span class="k">public</span> a; <span class="c">// slot 0, bytes 0-7</span></span><span class="ln" style="--i:4"><span class="t">uint64</span> <span class="k">public</span> b; <span class="c">// slot 0, bytes 8-15</span></span><span class="ln" style="--i:4"><span class="t">uint128</span> <span class="k">public</span> c; <span class="c">// slot 0, bytes 16-31</span></span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> setAll(<span class="t">uint64</span> x, <span class="t">uint64</span> y, <span class="t">uint128</span> z) <span class="k">external</span> {</span><span class="ln" style="--i:8">a = x;</span><span class="ln" style="--i:8">b = y;</span><span class="ln" style="--i:8">c = z;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 88,096; deploys as numbers only</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Loose()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">103,827</span></td></tr><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Packed()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">152,583</span></td></tr><tr class=" k-tx">
+      <td class="note">three slots</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Loose.</span>setAll(1, 2, 3)</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">88,096</span></td></tr><tr class=" k-tx">
+      <td class="note">one slot</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Packed.</span>setAll(1, 2, 3)</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:50.1%"></span></span><span class="g">44,174</span></td></tr></tbody></table></div></figure>
   
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
-    </div>
-  </footer>
-    <script src="js/script.js"></script>
+  <p class="after"><strong>What it shows.</strong> Writing the same three numbers cost <b>88,096</b> gas in three slots and <b>44,174</b> in one: 50% less, because the expensive part is touching a slot, not the size of the number. Packing only pays when the fields are written together and the smaller types are big enough for your values.</p>
+</section>
+<section class="lesson" id="inheritance" aria-labelledby="h-inheritance">
+  <h2 id="h-inheritance"><span class="num">03</span> Inheritance and interfaces</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>An <dfn>interface</dfn> lists functions without code; an <dfn>abstract contract</dfn> can hold shared code; a contract can inherit from both. Here <code>Greeter</code> gets <code>onlyOwner</code> from <code>Owned</code>.</p></div>
+    <figure class="code"><figcaption><code>contracts/advanced/Inheritance.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Inheritance, an abstract contract and an interface.</span></span><span class="ln" style="--i:0"><span class="k">interface</span> IGreeter {</span><span class="ln" style="--i:4"><span class="k">function</span> greet() <span class="k">external</span> <span class="k">view</span> <span class="k">returns</span> (<span class="t">string</span> <span class="k">memory</span>);</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">abstract</span> <span class="k">contract</span> Owned {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> owner = msg.sender;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">error</span> NotOwner();</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">modifier</span> onlyOwner() {</span><span class="ln" style="--i:8"><span class="k">if</span> (msg.sender != owner) <span class="k">revert</span> NotOwner();</span><span class="ln" style="--i:8">_;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="k">contract</span> Greeter <span class="k">is</span> Owned, IGreeter {</span><span class="ln" style="--i:4"><span class="t">string</span> <span class="k">private</span> greeting = <span class="s">&quot;gm&quot;</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> setGreeting(<span class="t">string</span> <span class="k">calldata</span> g) <span class="k">external</span> onlyOwner {</span><span class="ln" style="--i:8">greeting = g;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> greet() <span class="k">external</span> <span class="k">view</span> <span class="k">override</span> <span class="k">returns</span> (<span class="t">string</span> <span class="k">memory</span>) {</span><span class="ln" style="--i:8"><span class="k">return</span> greeting;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 88,096; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Greeter()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">301,691</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Greeter.</span>greet()</code></td>
+      <td class="res"><span class="ret">gm</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">3,107*</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">onlyOwner from Owned</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">Greeter.</span>setGreeting(hello)</code></td>
+      <td class="res"><span class="rev">reverted: NotOwner()</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:27.3%"></span></span><span class="g">24,092</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Greeter.</span>setGreeting(hello)</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:33.4%"></span></span><span class="g">29,434</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Greeter.</span>greet()</code></td>
+      <td class="res"><span class="ret">hello</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">3,107*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> The modifier came from the parent contract and still did its job: Bob was refused with <code>NotOwner()</code>, an error declared in <code>Owned</code>, not in <code>Greeter</code>.</p>
+</section>
+<section class="lesson" id="loops" aria-labelledby="h-loops">
+  <h2 id="h-loops"><span class="num">04</span> unchecked in loops</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>Since Solidity 0.8, arithmetic is checked: an overflow reverts. Wrapping a loop counter in <code>unchecked { ++i; }</code> used to save gas by skipping that check.</p></div>
+    <figure class="code"><figcaption><code>contracts/advanced/Loops.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Checked and unchecked arithmetic in a loop.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Loops {</span><span class="ln" style="--i:4"><span class="k">function</span> sumChecked(<span class="t">uint256</span> n) <span class="k">external</span> <span class="k">pure</span> <span class="k">returns</span> (<span class="t">uint256</span> s) {</span><span class="ln" style="--i:8"><span class="k">for</span> (<span class="t">uint256</span> i = <span class="n">0</span>; i &lt; n; i++) {</span><span class="ln" style="--i:12">s += i;</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> sumUnchecked(<span class="t">uint256</span> n) <span class="k">external</span> <span class="k">pure</span> <span class="k">returns</span> (<span class="t">uint256</span> s) {</span><span class="ln" style="--i:8"><span class="k">for</span> (<span class="t">uint256</span> i = <span class="n">0</span>; i &lt; n; ) {</span><span class="ln" style="--i:12">s += i;</span><span class="ln" style="--i:12"><span class="k">unchecked</span> {</span><span class="ln" style="--i:16">++i; <span class="c">// i &lt; n, so it cannot overflow</span></span><span class="ln" style="--i:12">}</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 88,096; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Loops()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">112,287</span></td></tr><tr class=" k-read">
+      <td class="note">checked, n = 10</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumChecked(10)</code></td>
+      <td class="res"><span class="ret">45</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">1,514*</span></td></tr><tr class=" k-read">
+      <td class="note">unchecked, n = 10</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumUnchecked(10)</code></td>
+      <td class="res"><span class="ret">45</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">1,536*</span></td></tr><tr class=" k-read">
+      <td class="note">checked, n = 100</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumChecked(100)</code></td>
+      <td class="res"><span class="ret">4950</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">12,584*</span></td></tr><tr class=" k-read">
+      <td class="note">unchecked, n = 100</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumUnchecked(100)</code></td>
+      <td class="res"><span class="ret">4950</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">12,606*</span></td></tr><tr class=" k-read">
+      <td class="note">checked, n = 1000</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumChecked(1000)</code></td>
+      <td class="res"><span class="ret">499500</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">123,284*</span></td></tr><tr class=" k-read">
+      <td class="note">unchecked, n = 1000</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Loops.</span>sumUnchecked(1000)</code></td>
+      <td class="res"><span class="ret">499500</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">123,306*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> Not any more. At 1,000 iterations the plain loop used <b>123,284</b> gas and the “optimised” one <b>123,306</b>. That is 22 gas <em>more</em> for the manual version. Since 0.8.22 the compiler removes the overflow check from a simple <code>for</code> loop counter by itself, so writing it by hand only adds instructions. Measure before you optimise. (These are read-only calls, so the figures are execution gas, without the 21,000 base cost of a transaction.)</p>
+</section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+
 </body>
 </html>

@@ -1,137 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solidity Resources & Learning Hub</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
-  <script src="scripts.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resources · Learn Solidity</title>
+<meta name="description" content="A short list of Solidity references, practice sites, tools and security guides.">
+<meta property="og:title" content="Resources · Learn Solidity">
+<meta property="og:description" content="A short list of Solidity references, practice sites, tools and security guides.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
-  <header>
-    <div class="container header-container">
-      <h1>Solidity Resources & Learning Hub</h1>
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="beginner.html">Beginners</a></li>
-          <li><a href="advanced.html">Advanced</a></li>
-          <li><a href="security.html">Security</a></li>
-          <li><a href="resources.html" class="active">Resources</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><button class="theme-switch" id="theme-switcher">Toggle Theme</button></li>
-        </ul>
-      </nav>
-      <button class="theme-switch" id="theme-switcher">Toggle Theme</button>
-    </div>
-  </header>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html" aria-current="page">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Resources</p><h1>Where to go next</h1><p class="lede">A short list, chosen for learners. These are other people’s sites; this site has no connection to them.</p></div>
+<section class="lesson" aria-labelledby="h-Reference"><h2 id="h-Reference">Reference</h2><ul class="links"><li><a href="https://docs.soliditylang.org/">Solidity documentation</a><span>The language reference, by the Solidity team. The source of truth for every rule on this site.</span></li><li><a href="https://github.com/ethereumbook/ethereumbook">Mastering Ethereum</a><span>Antonopoulos and Wood’s book, free on GitHub.</span></li><li><a href="https://solidity-by-example.org/">Solidity by Example</a><span>Short, runnable contracts for one idea each.</span></li></ul></section><section class="lesson" aria-labelledby="h-Practice"><h2 id="h-Practice">Practice</h2><ul class="links"><li><a href="https://cryptozombies.io/">CryptoZombies</a><span>An interactive course that builds a game step by step.</span></li><li><a href="https://speedrunethereum.com/">Speedrun Ethereum</a><span>Build-and-ship challenges.</span></li><li><a href="https://ethernaut.openzeppelin.com/">Ethernaut</a><span>Security puzzles: break a contract to pass each level.</span></li></ul></section><section class="lesson" aria-labelledby="h-Tools"><h2 id="h-Tools">Tools</h2><ul class="links"><li><a href="https://remix.ethereum.org/">Remix</a><span>Write, compile and deploy in the browser.</span></li><li><a href="https://book.getfoundry.sh/">Foundry</a><span>Tests written in Solidity, a fast local chain, gas reports.</span></li><li><a href="https://hardhat.org/">Hardhat</a><span>A JavaScript development environment.</span></li><li><a href="https://docs.openzeppelin.com/contracts/">OpenZeppelin Contracts</a><span>Audited building blocks: tokens, access control, reentrancy guards.</span></li></ul></section><section class="lesson" aria-labelledby="h-Security"><h2 id="h-Security">Security</h2><ul class="links"><li><a href="https://github.com/ConsenSys/smart-contract-best-practices">Smart Contract Best Practices</a><span>Known attacks and how to avoid them.</span></li><li><a href="https://github.com/crytic/not-so-smart-contracts">Not So Smart Contracts</a><span>Real vulnerable contracts, with the fix.</span></li><li><a href="https://swcregistry.io/">SWC Registry</a><span>A numbered catalogue of weakness types. Older, but the categories still hold.</span></li></ul></section><section class="lesson" aria-labelledby="h-Ask"><h2 id="h-Ask">Ask</h2><ul class="links"><li><a href="https://ethereum.stackexchange.com/">Ethereum Stack Exchange</a><span>Questions and answers.</span></li><li><a href="https://www.reddit.com/r/ethdev/">r/ethdev</a><span>A developer forum.</span></li></ul></section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
 
-  <main>
-    <div class="container content-container">
-      
-      <!-- Introduction -->
-      <section class="section" id="introduction">
-        <h2>Introduction to Solidity Resources</h2>
-        <p>Learning Solidity involves understanding Ethereum smart contract development, security best practices, and decentralized application (dApp) deployment. This page provides an extensive list of recommended books, documentation, tutorials, developer tools, online courses, and community resources.</p>
-      </section>
-
-      <!-- Official Documentation -->
-      <section class="section" id="documentation">
-        <h3>Official Solidity Documentation</h3>
-        <p>The best place to start learning Solidity is the official documentation. It covers everything from syntax to advanced features.</p>
-        <ul>
-          <li><a href="https://soliditylang.org/docs/" target="_blank">Solidity Official Documentation</a> - Comprehensive guide maintained by Solidity developers.</li>
-          <li><a href="https://docs.soliditylang.org/en/latest/" target="_blank">Latest Solidity Docs</a> - Always updated with the newest features and changes.</li>
-        </ul>
-      </section>
-
-      <!-- Books on Solidity -->
-      <section class="section" id="books">
-        <h3>Recommended Books on Solidity</h3>
-        <p>Books can provide in-depth insights into Solidity programming and blockchain development.</p>
-        <ul>
-          <li><strong>Mastering Ethereum</strong> - By Andreas M. Antonopoulos and Gavin Wood (<a href="https://github.com/ethereumbook/ethereumbook" target="_blank">GitHub</a>)</li>
-          <li><strong>Solidity Programming Essentials</strong> - A great introduction to Solidity for beginners.</li>
-          <li><strong>Building Ethereum DApps</strong> - Focuses on smart contract development and dApp creation.</li>
-        </ul>
-      </section>
-
-      <!-- Online Courses -->
-      <section class="section" id="courses">
-        <h3>Online Courses for Solidity</h3>
-        <p>Structured courses can help beginners and advanced developers master Solidity.</p>
-        <ul>
-          <li><a href="https://www.udemy.com/course/ethereum-and-solidity-the-complete-developers-guide/" target="_blank">Ethereum and Solidity: The Complete Developer’s Guide (Udemy)</a></li>
-          <li><a href="https://www.coursera.org/learn/blockchain-platforms" target="_blank">Coursera - Blockchain Platforms</a></li>
-          <li><a href="https://cryptozombies.io/" target="_blank">CryptoZombies - Interactive Solidity Learning</a></li>
-          <li><a href="https://www.consensys.net/academy/" target="_blank">Consensys Academy Blockchain Development</a></li>
-        </ul>
-      </section>
-
-      <!-- Developer Tools -->
-      <section class="section" id="developer-tools">
-        <h3>Solidity Developer Tools</h3>
-        <p>Development tools help streamline Solidity coding, testing, and deployment.</p>
-        <ul>
-          <li><strong>Remix IDE</strong> - <a href="https://remix.ethereum.org/" target="_blank">Browser-based Solidity IDE</a></li>
-          <li><strong>Hardhat</strong> - <a href="https://hardhat.org/" target="_blank">Ethereum development environment</a> for testing and debugging.</li>
-          <li><strong>Truffle</strong> - <a href="https://trufflesuite.com/" target="_blank">Suite of Ethereum development tools</a> including a smart contract compiler.</li>
-          <li><strong>OpenZeppelin</strong> - <a href="https://openzeppelin.com/" target="_blank">Security libraries and reusable smart contracts</a></li>
-          <li><strong>Ganache</strong> - <a href="https://trufflesuite.com/ganache/" target="_blank">Local blockchain simulator</a> for Ethereum development.</li>
-        </ul>
-      </section>
-
-      <!-- Solidity Security Resources -->
-      <section class="section" id="security-resources">
-        <h3>Security Resources for Solidity</h3>
-        <p>Security is critical in Solidity development. These resources help you understand vulnerabilities and best practices.</p>
-        <ul>
-          <li><a href="https://consensys.net/diligence/" target="_blank">Consensys Diligence</a> - Smart contract security audits.</li>
-          <li><a href="https://github.com/crytic/not-so-smart-contracts" target="_blank">Not So Smart Contracts</a> - List of common security vulnerabilities in Solidity.</li>
-          <li><a href="https://swcregistry.io/" target="_blank">SWC Registry</a> - Catalog of Solidity security weaknesses.</li>
-          <li><a href="https://github.com/ConsenSys/smart-contract-best-practices" target="_blank">Smart Contract Best Practices (GitHub)</a></li>
-        </ul>
-      </section>
-
-      <!-- Community & Forums -->
-      <section class="section" id="community">
-        <h3>Solidity Community & Forums</h3>
-        <p>Engaging with the Solidity community is one of the best ways to learn and stay updated.</p>
-        <ul>
-          <li><a href="https://ethereum.stackexchange.com/" target="_blank">Ethereum Stack Exchange</a> - Ask and answer Solidity-related questions.</li>
-          <li><a href="https://discord.com/invite/ethereum" target="_blank">Ethereum Discord</a> - Active community of Solidity developers.</li>
-          <li><a href="https://twitter.com/solidity_lang" target="_blank">Solidity Twitter</a> - Official Solidity updates and discussions.</li>
-          <li><a href="https://www.reddit.com/r/ethdev/" target="_blank">Reddit - Ethereum Developers</a></li>
-          <li><a href="https://forum.openzeppelin.com/" target="_blank">OpenZeppelin Forum</a> - Discussions on Solidity security and best practices.</li>
-        </ul>
-      </section>
-
-      <!-- Additional Learning Platforms -->
-      <section class="section" id="other-platforms">
-        <h3>Other Learning Platforms</h3>
-        <p>Some additional resources that can help improve your Solidity skills.</p>
-        <ul>
-          <li><a href="https://solidity-by-example.org/" target="_blank">Solidity by Example</a> - Practical examples to understand Solidity concepts.</li>
-          <li><a href="https://speedrunethereum.com/" target="_blank">Speed Run Ethereum</a> - Challenges to test and improve Solidity skills.</li>
-          <li><a href="https://eth.build/" target="_blank">Ethereum Build</a> - Interactive learning platform for Ethereum development.</li>
-        </ul>
-      </section>
-
-      <!-- Conclusion -->
-      <section class="section" id="conclusion">
-        <h3>Conclusion</h3>
-        <p>Solidity development requires continuous learning. Whether you're a beginner or an experienced developer, the resources listed above will help you expand your knowledge and improve your Solidity skills. Stay engaged with the community, follow best practices, and keep building!</p>
-      </section>
-
-    </div>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Solidity Learning Hub. All rights reserved.</p>
-    </div>
-  </footer>
 </body>
 </html>

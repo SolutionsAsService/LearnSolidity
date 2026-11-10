@@ -13,11 +13,13 @@ docs, new features, data corrections and ideas.
 
 ## Getting set up
 
-This is a static site: no build step.
+The site is static HTML, but every page and figure is generated: `contracts/` is compiled and run by `tools/`, and the pages are written from the results. Edit a contract, a scenario (`tools/scenarios.mjs`) or the lesson text (`tools/content.mjs`), then rebuild.
 
 ```bash
 git clone https://github.com/SolutionsAsService/LearnSolidity
 cd LearnSolidity
+cd tools && npm ci && npm run build && cd ..
+npm --prefix tools run check   # every recorded figure reproduces
 npx serve .
 ```
 

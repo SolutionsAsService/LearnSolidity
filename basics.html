@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basics · Learn Solidity</title>
+<meta name="description" content="Four small contracts. Each one was compiled and run; the table under it is what happened.">
+<meta property="og:title" content="Basics · Learn Solidity">
+<meta property="og:description" content="Four small contracts. Each one was compiled and run; the table under it is what happened.">
+<meta property="og:image" content="assets/img/card.png">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast">
+  <a class="brand" href="index.html"><span aria-hidden="true">◆</span> Learn Solidity</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="basics.html" aria-current="page">Basics</a><a href="advanced.html">Advanced</a><a href="security.html">Security</a><a href="examples.html">Examples</a><a href="playground.html">Run it</a><a href="resources.html">Resources</a><a href="about.html">About</a></nav>
+</header>
+<main id="main">
+<div class="page-head"><p class="kicker">Basics</p><h1>Basics: state, calls and saying no</h1><p class="lede">Four small contracts. Each one was compiled and run; the table under it is what happened.</p><ol class="toc"><li><a href="#counter">A number that lives on chain</a></li><li><a href="#ledger">Mappings, structs and events</a></li><li><a href="#guarded">require: saying no</a></li><li><a href="#piggy">Receiving and sending ether</a></li></ol></div>
+<section class="lesson" id="counter" aria-labelledby="h-counter">
+  <h2 id="h-counter"><span class="num">01</span> A number that lives on chain</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>A contract is code plus storage. <code>count</code> is a <dfn>state variable</dfn>: it lives in storage and keeps its value between transactions. Reading it is free; changing it costs gas.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>smart contract</dt><dd>A program stored on a blockchain. Anyone can call its functions; nobody can quietly change its code.</dd><dt>storage</dt><dd>The data a contract keeps between transactions. It is written to every node, which is why writing it costs the most gas.</dd><dt>gas</dt><dd>The unit of work the network charges for. Every operation has a fixed gas cost; storing data is the expensive part.</dd><dt>transaction</dt><dd>A signed message that changes the chain: deploys a contract, calls a function or sends ether. It costs gas.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/basics/Counter.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Counter: one number stored on chain.</span></span><span class="ln" style="--i:0"><span class="c">/// @notice State lives in storage; reading it is free, changing it costs gas.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Counter {</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> count; <span class="c">// starts at 0</span></span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> increment() <span class="k">external</span> {</span><span class="ln" style="--i:8">count += <span class="n">1</span>;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> reset() <span class="k">external</span> {</span><span class="ln" style="--i:8">count = <span class="n">0</span>;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 67,267; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Counter()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">99,711</span></td></tr><tr class=" k-tx">
+      <td class="note">first write: 0 → 1</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Counter.</span>increment()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:64.5%"></span></span><span class="g">43,405</span></td></tr><tr class=" k-tx">
+      <td class="note">second write: 1 → 2</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Counter.</span>increment()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:39.1%"></span></span><span class="g">26,305</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Counter.</span>count()</code></td>
+      <td class="res"><span class="ret">2</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,259*</span></td></tr><tr class=" k-tx">
+      <td class="note">back to zero: refund</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">Counter.</span>reset()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:31.8%"></span></span><span class="g">21,422</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Counter.</span>count()</code></td>
+      <td class="res"><span class="ret">0</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,259*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> The same function cost <b>43,405</b> gas the first time and <b>26,305</b> the second. Turning a zero into a non-zero value is the most expensive write there is; changing an existing value is cheaper. Setting it back to zero earns a refund, so <code>reset()</code> cost only <b>21,422</b>. Notice that Bob, not the deployer, could reset it: nothing here checks who is calling. What does gas cost in money? You pay gas × gas price. At a gas price of 20 gwei (0.00000002 ETH), the first <code>increment()</code> would cost 43,405 × 20 gwei = <b>0.000868 ETH</b>; gas prices change from block to block, so check the current one before you deploy.</p>
+</section>
+<section class="lesson" id="ledger" aria-labelledby="h-ledger">
+  <h2 id="h-ledger"><span class="num">02</span> Mappings, structs and events</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>A <dfn>mapping</dfn> is a lookup table from keys to values; a <dfn>struct</dfn> groups fields. <code>record()</code> writes both and emits an event.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>event</dt><dd>A log line a contract emits. Apps listen for events; contracts cannot read them.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/basics/Ledger.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Ledger: a mapping, a struct and an event.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Ledger {</span><span class="ln" style="--i:4"><span class="k">struct</span> Entry {</span><span class="ln" style="--i:8"><span class="t">uint256</span> amount;</span><span class="ln" style="--i:8"><span class="t">uint64</span> updatedAt; <span class="c">// block timestamp of the last change</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; Entry) <span class="k">public</span> entries;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">event</span> Recorded(<span class="t">address</span> indexed who, <span class="t">uint256</span> amount);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> record(<span class="t">uint256</span> amount) <span class="k">external</span> {</span><span class="ln" style="--i:8">entries[msg.sender] = Entry(amount, <span class="t">uint64</span>(block.timestamp));</span><span class="ln" style="--i:8"><span class="k">emit</span> Recorded(msg.sender, amount);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> amountOf(<span class="t">address</span> who) <span class="k">external</span> <span class="k">view</span> <span class="k">returns</span> (<span class="t">uint256</span>) {</span><span class="ln" style="--i:8"><span class="k">return</span> entries[who].amount; <span class="c">// an unset key reads as 0, never an error</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 67,267; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Ledger()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">156,447</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Ledger.</span>record(42)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Recorded(Alice, 42)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">67,267</span></td></tr><tr class=" k-tx">
+      <td class="note"></td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">Ledger.</span>record(7)</code></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Recorded(Bob, 7)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">67,267</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Ledger.</span>amountOf(Alice)</code></td>
+      <td class="res"><span class="ret">42</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,469*</span></td></tr><tr class=" k-read">
+      <td class="note">an address that never wrote</td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Ledger.</span>amountOf(Carol)</code></td>
+      <td class="res"><span class="ret">0</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,469*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> Every key of a mapping already exists and reads as zero: Carol never wrote, and <code>amountOf(Carol)</code> returned <b>0</b>, not an error. Each <code>record()</code> left a <code>Recorded</code> event in the transaction log, which is how a website would learn about it.</p>
+</section>
+<section class="lesson" id="guarded" aria-labelledby="h-guarded">
+  <h2 id="h-guarded"><span class="num">03</span> require: saying no</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p><code>require(condition, "message")</code> stops a transaction when the condition is false and undoes it. <code>msg.sender</code> is whoever called.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>msg.sender</dt><dd>The address that called this function directly: a person’s account or another contract.</dd><dt>revert</dt><dd>A transaction that stops and undoes everything it did. The sender still pays for the gas used up to that point.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/basics/Guarded.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title Guarded: require, revert and who is calling.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Guarded {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">public</span> <span class="k">immutable</span> owner;</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> limit = <span class="n">100</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">constructor</span>() {</span><span class="ln" style="--i:8">owner = msg.sender;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> setLimit(<span class="t">uint256</span> newLimit) <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(msg.sender == owner, <span class="s">&quot;Only the owner can set the limit&quot;</span>);</span><span class="ln" style="--i:8"><span class="k">require</span>(newLimit &gt; <span class="n">0</span>, <span class="s">&quot;Limit must be positive&quot;</span>);</span><span class="ln" style="--i:8">limit = newLimit;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 67,267; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new Guarded()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">173,684</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">not the owner</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">Guarded.</span>setLimit(500)</code></td>
+      <td class="res"><span class="rev">reverted: Only the owner can set the limit</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:32.0%"></span></span><span class="g">21,552</span></td></tr><tr class="is-rev k-tx">
+      <td class="note">owner, bad value</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Guarded.</span>setLimit(0)</code></td>
+      <td class="res"><span class="rev">reverted: Limit must be positive</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:32.1%"></span></span><span class="g">21,564</span></td></tr><tr class=" k-tx">
+      <td class="note">owner, good value</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Guarded.</span>setLimit(500)</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:39.4%"></span></span><span class="g">26,477</span></td></tr><tr class=" k-read">
+      <td class="note"></td>
+      <td class="who">read</td>
+      <td class="call"><code><span class="to">Guarded.</span>limit()</code></td>
+      <td class="res"><span class="ret">500</span></td>
+      <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,315*</span></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> Bob’s call reverted with the contract’s own words, “Only the owner can set the limit”, and still cost him <b>21,552</b> gas: a refused transaction is not free. The owner’s valid call went through for <b>26,477</b>.</p>
+</section>
+<section class="lesson" id="piggy" aria-labelledby="h-piggy">
+  <h2 id="h-piggy"><span class="num">04</span> Receiving and sending ether</h2>
+  <div class="lesson-grid">
+    <div class="prose"><p>A contract can hold ether. <code>receive()</code> runs when someone sends ether with no function call; <code>payable</code> marks addresses and functions that may receive it.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>ether (ETH)</dt><dd>The currency of Ethereum. 1 ETH = 10¹⁸ wei, the smallest unit.</dd></dl></aside></div>
+    <figure class="code"><figcaption><code>contracts/basics/PiggyBank.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title PiggyBank: receiving and sending ether.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> PiggyBank {</span><span class="ln" style="--i:4"><span class="t">address</span> <span class="k">payable</span> <span class="k">public</span> <span class="k">immutable</span> owner;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">event</span> Deposited(<span class="t">address</span> indexed from, <span class="t">uint256</span> amount);</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">constructor</span>() {</span><span class="ln" style="--i:8">owner = <span class="k">payable</span>(msg.sender);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">receive</span>() <span class="k">external</span> <span class="k">payable</span> {</span><span class="ln" style="--i:8"><span class="k">emit</span> Deposited(msg.sender, msg.value);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> smash() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(msg.sender == owner, <span class="s">&quot;Not your piggy bank&quot;</span>);</span><span class="ln" style="--i:8">(<span class="t">bool</span> ok, ) = owner.call{value: <span class="t">address</span>(this).balance}(<span class="s">&quot;&quot;</span>);</span><span class="ln" style="--i:8"><span class="k">require</span>(ok, <span class="s">&quot;Transfer failed&quot;</span>);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
+  </div>
+  <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 67,267; deploys as numbers only</span></figcaption>
+  <div class="trace-wrap"><table><thead><tr><th scope="col">step</th><th scope="col">who</th><th scope="col">call</th><th scope="col">result</th><th scope="col">gas</th></tr></thead><tbody><tr class=" k-deploy">
+      <td class="note"></td>
+      <td class="who">Alice deploys</td>
+      <td class="call"><code>new PiggyBank()</code></td>
+      <td class="res"><span class="okc">deployed</span></td>
+      <td class="gas"><span class="g">173,124</span></td></tr><tr class=" k-tx">
+      <td class="note">Bob sends 1 ETH</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">PiggyBank.</span>send ether</code> <span class="val">+1 ETH</span></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Deposited(Bob, 1 ETH)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:33.4%"></span></span><span class="g">22,491</span></td></tr><tr class=" k-tx">
+      <td class="note">Carol sends 0.5 ETH</td>
+      <td class="who">Carol →</td>
+      <td class="call"><code><span class="to">PiggyBank.</span>send ether</code> <span class="val">+0.5 ETH</span></td>
+      <td class="res"><span class="okc">ok</span><span class="ev">Deposited(Carol, 0.5 ETH)</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:33.4%"></span></span><span class="g">22,491</span></td></tr><tr class=" k-balance">
+      <td class="note">PiggyBank balance</td>
+      <td class="who">balance</td>
+      <td class="call"><code>PiggyBank</code></td>
+      <td class="res"><span class="ret">1.5 ETH</span></td>
+      <td class="gas"></td></tr><tr class="is-rev k-tx">
+      <td class="note">Bob tries to smash it</td>
+      <td class="who">Bob →</td>
+      <td class="call"><code><span class="to">PiggyBank.</span>smash()</code></td>
+      <td class="res"><span class="rev">reverted: Not your piggy bank</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar bar--rev" style="--w:31.7%"></span></span><span class="g">21,327</span></td></tr><tr class=" k-tx">
+      <td class="note">the owner smashes it</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">PiggyBank.</span>smash()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:41.9%"></span></span><span class="g">28,160</span></td></tr><tr class=" k-balance">
+      <td class="note">PiggyBank balance</td>
+      <td class="who">balance</td>
+      <td class="call"><code>PiggyBank</code></td>
+      <td class="res"><span class="ret">0 ETH</span></td>
+      <td class="gas"></td></tr></tbody></table></div></figure>
+  
+  <p class="after"><strong>What it shows.</strong> Two plain transfers left the contract holding <b>1.5 ETH</b>. Bob could not smash it; the owner could, and the balance went to <b>0 ETH</b>. The transfer uses <code>call</code> and checks its result: a failed send that nobody checks is a classic bug.</p>
+</section>
+</main>
+<footer class="foot">
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
+</footer>
+
+</body>
+</html>
