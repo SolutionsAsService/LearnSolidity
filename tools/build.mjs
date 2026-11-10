@@ -169,8 +169,8 @@ function examplePage(key) {
   const fixed = key === 'payment' ? runs.paymentfixed : null;
   const max = txMax(fixed ? [r, fixed] : [r]);
   const body = `<div class="page-head"><p class="kicker"><a href="examples.html">Examples</a></p><h1>${esc(e.title)}</h1><p class="lede">${esc(e.lede)}</p>
-<p><a class="btn btn--ghost" href="playground.html?c=${encodeURIComponent(r.file.split('/')[1].replace('.sol', ''))}">Run it yourself <span class="muted">(${BUNDLE_KB} KB download)</span></a></p></div>
-<section class="lesson" aria-labelledby="h-run"><h2 id="h-run">What happened when it ran</h2>${termBox(['transaction', 'revert', 'event'])}${trace(r, { max, caption: 'The run' })}<p class="after"><strong>What it shows.</strong> ${e.after(r.steps)}</p></section>
+<p><a class="btn btn--ghost" href="playground.html?c=${encodeURIComponent(r.file.split('/')[1].replace('.sol', ''))}">Run it yourself <span class="muted">(a ${BUNDLE_KB} KB download)</span></a></p></div>
+<section class="lesson" aria-labelledby="h-run"><h2 id="h-run">What happened when it ran</h2>${trace(r, { max, caption: 'The run' })}<p class="after"><strong>What it shows.</strong> ${e.after(r.steps)}</p>${termBox(['transaction', 'revert', 'event'])}</section>
 ${fixed ? owedChart() : ''}
 <section class="lesson" aria-labelledby="h-src"><h2 id="h-src">The contract</h2>${codeBlock(r.file, 'as in the original repository')}</section>
 ${fixed ? `<section class="lesson" aria-labelledby="h-fix"><h2 id="h-fix">The fix</h2>${codeBlock(fixed.file, 'one new variable: totalOwed')}${trace(fixed, { max, caption: 'The same run against the fixed contract' })}<p class="after"><strong>What it shows.</strong> ${e.fixed(fixed.steps)}</p></section>` : ''}`;
@@ -202,7 +202,8 @@ function owedChart() {
   const bw = ((W - L - 8) / pts.length) * 0.32;
   const bars = pts.map((p, i) => `<rect x="${(x(i) - bw - 1).toFixed(1)}" y="${y(p.held).toFixed(1)}" width="${bw.toFixed(1)}" height="${(y(0) - y(p.held)).toFixed(1)}" class="c-held"/><rect x="${(x(i) + 1).toFixed(1)}" y="${y(p.owed).toFixed(1)}" width="${bw.toFixed(1)}" height="${(y(0) - y(p.owed)).toFixed(1)}" class="c-owed"/>${p.owed > p.held ? `<text x="${x(i).toFixed(1)}" y="${(y(p.owed) - 5).toFixed(1)}" class="c-gap" text-anchor="middle">short ${+(p.owed - p.held).toFixed(6)}</text>` : ''}<text x="${x(i).toFixed(1)}" y="${H - B + 14}" text-anchor="middle" class="c-lab">${i + 1}</text>`).join('');
   const lastHeld = pts.length - 1;
-  const labels = `<text x="${(x(2) - bw - 1).toFixed(1)}" y="${(y(pts[2].held) - 6).toFixed(1)}" class="c-key" text-anchor="end">held</text><text x="${(x(3) + 1 + bw).toFixed(1)}" y="${(y(pts[3].owed) + 14).toFixed(1)}" class="c-key">promised</text>`;
+  const hi = pts.findIndex((p) => p.held > 0), oi = pts.findIndex((p) => p.owed > 0 && p.held === 0);
+  const labels = `<text x="${(x(hi) - bw / 2 - 1).toFixed(1)}" y="${(y(pts[hi].held) - 8).toFixed(1)}" class="c-key" text-anchor="middle">held</text><text x="${(x(oi) + 1 + bw / 2).toFixed(1)}" y="${(y(pts[oi].owed) - 22).toFixed(1)}" class="c-key" text-anchor="middle">promised</text>`;
   const legend = pts.map((p, i) => `<li><b>${i + 1}</b> ${esc(p.s.from)}: ${esc(p.s.call)}${p.s.ok === false ? ' <span class="rev">(reverted)</span>' : ''} · held ${p.held}, promised ${p.owed}</li>`).join('');
   const grid = [0, max / 2, max].map((v) => `<line x1="${L}" x2="${W - 8}" y1="${y(v)}" y2="${y(v)}" class="c-grid"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" class="c-lab">${v} ETH</text>`).join('');
   const desc = pts.map((p, i) => `step ${i + 1}: held ${p.held} ETH, promised ${p.owed} ETH`).join('; ');
@@ -235,7 +236,7 @@ function landing() {
   <figure class="block" aria-labelledby="block-cap">
     <figcaption id="block-cap"><span>One transaction from each part of the site</span><span class="muted">gas<span class="wide-only">, one scale from zero</span></span></figcaption>
     <ol class="txs">${tr}
-      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, ${BUNDLE_KB} KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of ${PLAY.length} contracts</span><span class="tx-res">your transaction, in your browser <span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">yours · ${BUNDLE_KB} KB</span></span></a></li>
+      <li class="tx tx--you"><a href="playground.html" aria-label="Run it: send your own transactions in your browser, ${BUNDLE_KB} KB download"><span class="tx-n">5</span><span class="tx-topic">Run it</span><span class="tx-call"><b>You</b> → any of ${PLAY.length} contracts</span><span class="tx-res">your transaction, in your browser <span class="go" aria-hidden="true">→</span></span><span class="tx-gas"><span class="g">${BUNDLE_KB} KB download</span></span></a></li>
     </ol>
   </figure>
 </section>
@@ -269,7 +270,7 @@ function examplesHub() {
 function playground() {
   const opts = PLAY.map((k) => `<option value="${k}">${k}</option>`).join('');
   const body = `<div class="page-head"><p class="kicker">Run it</p><h1>Run the contracts yourself</h1>
-<p class="lede">A fresh chain runs in this page: five accounts with 1,000 test ether each, and the contracts from this site, precompiled. Pick who you are and call any function. Nothing leaves your browser and the ether is not real. The EVM is a ${BUNDLE_KB} KB download.</p></div>
+<p class="lede">A fresh chain runs in this page: five accounts with 1,000 test ether each, and the contracts from this site, precompiled. Pick who you are and call any function. Nothing leaves your browser and the ether is not real. The EVM is a download of ${BUNDLE_KB} KB.</p></div>
 <section class="play" aria-label="Playground">
   <div class="play-controls">
     <label>Contract <select id="pg-contract">${opts}</select></label>
@@ -325,10 +326,10 @@ function about() {
 <ol class="numbered">
   <li>The ${TOTALS.files} Solidity files in <code>contracts/</code> are compiled with solc ${esc(SOLC)} (optimizer on, 200 runs, Cancun EVM).</li>
   <li>Each lesson has a script in <code>tools/scenarios.mjs</code>: who deploys, who calls what, with how much ether.</li>
-  <li>The scripts run in EthereumJS, a JavaScript implementation of the Ethereum Virtual Machine, on a fresh chain with five accounts (Alice, Bob, Carol, Dave and Mallory). Every transaction's gas, return value, events and revert reason is recorded in <code>data/runs.json</code>.</li>
+  <li>The scripts run in EthereumJS, a JavaScript implementation of the Ethereum Virtual Machine, on a fresh chain per lesson: five named accounts (Alice, Bob, Carol, Dave and Mallory), plus as many more as a lesson needs (the unbounded-loop lesson adds 199 members). Every listed transaction's gas, return value, events and revert reason is recorded in <code>data/runs.json</code>; unlisted setup calls are counted there, and the build stops if one of them fails.</li>
   <li>The pages are written from that file. The text quotes it rather than retyping it.</li>
 </ol>
-<p>Gas figures are for the whole transaction, including the 21,000 base cost every transaction pays; read-only calls show execution gas only and are marked with an asterisk. On a public network your numbers will match only for the same compiler, settings and EVM version.</p></section>
+<p>Blocks have a 30,000,000 gas limit, as on Ethereum mainnet, and a transaction may use a whole block. Gas figures are for the whole transaction, including the 21,000 base cost every transaction pays; read-only calls show execution gas only and are marked with an asterisk. On a public network your numbers will match only for the same compiler, settings and EVM version.</p></section>
 <section class="lesson" aria-labelledby="h-limits"><h2 id="h-limits">What this site is not</h2>
 <p>It is not an audit and not financial advice. The contracts are teaching code: small, readable, deliberately incomplete. Before you deploy anything that holds real money, have it tested and reviewed.</p></section>`;
   page('about.html', { title: 'About · Learn Solidity', desc: 'How Learn Solidity compiles and runs every contract to produce the figures it prints.', body, current: 'about.html' });

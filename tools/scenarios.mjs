@@ -137,24 +137,29 @@ export const SCENARIOS = [
     async run(t) {
       await t.deploy('Unbounded', 'Unbounded', 'Alice');
       await t.send('Alice', 'Unbounded', 'join', [], 0n, 'member 1 joins');
-      await t.send('Alice', 'Unbounded', 'payout', [], 0n, 'payout with 1 member');
+      await t.send('Alice', 'Unbounded', 'payout', [], 0n, 'first payout, 1 member', false, { members: 1, round: 'first' });
       let members = 1;
-      for (const size of [10, 50, 200]) {
+      for (const size of [50, 200]) {
+        const from = members + 1;
         while (members < size) {
           members++;
           const who = await t.addActor(`Member${members}`);
           await t.send(who, 'Unbounded', 'join', [], 0n, null, true);
         }
-        t.setup(`members ${size === 10 ? 2 : size === 50 ? 11 : 51} to ${size} join (one join() each, not listed)`);
-        await t.send('Alice', 'Unbounded', 'payout', [], 0n, `payout with ${size} members`);
+        t.setup(`members ${from} to ${size} join (one join() each, not listed)`);
+        // a new member's first credit writes a fresh storage slot (expensive); a repeat credit only changes it (cheaper)
+        await t.send('Alice', 'Unbounded', 'payout', [], 0n, `payout with ${size} members, some new`, false, { members: size, round: 'first' });
+        await t.send('Alice', 'Unbounded', 'payout', [], 0n, `next payout, same ${size} members`, false, { members: size, round: 'repeat' });
       }
       // the fix: same members, pull payments
       await t.deploy('PullPayout', 'PullPayout', 'Alice');
       await t.send('Alice', 'PullPayout', 'join', [], 0n, 'member 1 joins');
+      await t.send('Alice', 'PullPayout', 'payout', [], 0n, 'pull payout with 1 member', false, { members: 1 });
+      await t.send('Alice', 'PullPayout', 'claim', [], 0n, 'member 1 claims', false, { members: 1 });
       for (let m = 2; m <= 200; m++) await t.send(`Member${m}`, 'PullPayout', 'join', [], 0n, null, true);
       t.setup('members 2 to 200 join (not listed)');
-      await t.send('Alice', 'PullPayout', 'payout', [], 0n, 'pull payout with 200 members');
-      await t.send('Member200', 'PullPayout', 'claim', [], 0n, 'member 200 claims their share');
+      await t.send('Alice', 'PullPayout', 'payout', [], 0n, 'pull payout with 200 members', false, { members: 200 });
+      await t.send('Member200', 'PullPayout', 'claim', [], 0n, 'member 200 claims', false, { members: 200 });
       await t.read('PullPayout', 'credit', ['Member200'], 'member 200 is credited');
     },
   },

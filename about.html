@@ -26,15 +26,15 @@
 <ol class="numbered">
   <li>The 16 Solidity files in <code>contracts/</code> are compiled with solc 0.8.28 (optimizer on, 200 runs, Cancun EVM).</li>
   <li>Each lesson has a script in <code>tools/scenarios.mjs</code>: who deploys, who calls what, with how much ether.</li>
-  <li>The scripts run in EthereumJS, a JavaScript implementation of the Ethereum Virtual Machine, on a fresh chain with five accounts (Alice, Bob, Carol, Dave and Mallory). Every transaction's gas, return value, events and revert reason is recorded in <code>data/runs.json</code>.</li>
+  <li>The scripts run in EthereumJS, a JavaScript implementation of the Ethereum Virtual Machine, on a fresh chain per lesson: five named accounts (Alice, Bob, Carol, Dave and Mallory), plus as many more as a lesson needs (the unbounded-loop lesson adds 199 members). Every listed transaction's gas, return value, events and revert reason is recorded in <code>data/runs.json</code>; unlisted setup calls are counted there, and the build stops if one of them fails.</li>
   <li>The pages are written from that file. The text quotes it rather than retyping it.</li>
 </ol>
-<p>Gas figures are for the whole transaction, including the 21,000 base cost every transaction pays; read-only calls show execution gas only and are marked with an asterisk. On a public network your numbers will match only for the same compiler, settings and EVM version.</p></section>
+<p>Blocks have a 30,000,000 gas limit, as on Ethereum mainnet, and a transaction may use a whole block. Gas figures are for the whole transaction, including the 21,000 base cost every transaction pays; read-only calls show execution gas only and are marked with an asterisk. On a public network your numbers will match only for the same compiler, settings and EVM version.</p></section>
 <section class="lesson" aria-labelledby="h-limits"><h2 id="h-limits">What this site is not</h2>
 <p>It is not an audit and not financial advice. The contracts are teaching code: small, readable, deliberately incomplete. Before you deploy anything that holds real money, have it tested and reviewed.</p></section>
 </main>
 <footer class="foot">
-  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 494 transactions (96 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
   <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
 </footer>
 

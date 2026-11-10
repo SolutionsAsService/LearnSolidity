@@ -195,3 +195,45 @@ Andon pulled: no. Statement of meaning (from the seats): "the site now shows cod
   - Contracts 22 → 23 (PullPayout).
   - Mobile hero bottom 784 → 793 px (bug sentence restored; intended).
   - No regressions found by the probes.
+
+### Panel, WHOLE, round R2 (after M6)
+
+| Critic | Anchor used | Observed in the work | Verdict | Requested change |
+|---|---|---|---|---|
+| Critic: Provocateur (Debord) | *Society of the Spectacle*, theses 1 and 4 | R1 F1–F4 resolved; About still says "five accounts" and "every transaction's gas is recorded"; the transaction gas cap was 10M while the page says 30M; "whatever the size" measured at one size; `/150` and `200 +` typed | OBJECT | Fix About; name the cap; measure two sizes; derive the divisors |
+| Critic: Provocateur (Shklovsky) | "Art as Technique" | Ledger rows and the staircase resolve R1; on the payment page the chart's swatches fill the figure (CSS clash) and Terms push the revert below the fold | OBJECT | Fix the swatches; move the label; Terms after the run |
+| Critic: Inclusion (Holmes) | *Mismatch* | R1 F1–F4 resolved; payment chart key swatches render about 505 px; "promised" label overlaps a bar | OBJECT | One CSS line; move the label |
+| Critic: Inclusion (Mace) | *Principles of Universal Design* P4, P7 | 308 real Tab stops all ringed; nav current shown by weight and rule; swatch regression 760×760; revert bars 1.07:1 in light forced colours; screenshots older than the last CSS edit | OBJECT | `.owed .key` size; CanvasText border on revert bars |
+| Critic: Evidence (Cairo) | *How Charts Lie* | R1 F1–F6 resolved, byte-identical rebuild; the per-member slope mixes first credits with repeat credits (the conductor's probe: repeat 7,636 per member, crossing about 3,900); 1,482 against 1,483; hidden sends unchecked | OBJECT | Separate the regimes; align the figures; throw on a failed hidden send |
+| Critic: Evidence (Tufte) | *Visual Display*: Lie Factor, chartjunk | Hero bars Lie Factor 1.00 at both sizes; payment trace on one scale; staircase correct; legend swatches are 760 px blocks (the largest ink on the page, encoding nothing); slope mislabelled | OBJECT | Scope the svg rule; name the range |
+| Critic: Social (Papanek) | *Design for the Real World* | Hanging indent, gas-to-ether example and download size all present | PASS | Optional: grammar |
+| Critic: Usability (Krug) | *Don't Make Me Think* | Five-second test and trunk test pass; every row has a → cue | PASS | Optional: label the KB figure as a download; "01" heading wrap |
+
+Andon pulled: no. One defect, the swatch CSS clash, was raised by four seats. It is a regression of M6 that the conductor's
+captures missed, because they predated the final CSS edit (Mace F6). That miss is entered in the Carry-Forward below.
+
+### Resolutions (R2)
+
+| Finding | Resolution |
+|---|---|
+| Tufte + Mace + Shklovsky + Holmes: legend swatches fill the figure | ADAPT (M7): the rule is scoped to `.owed > svg`, and the key is sized by `.owed .key` (12 px, measured) |
+| Shklovsky + Holmes + Tufte: "promised" label overlaps a bar | ADAPT (M7): labels sit above the first held-only and the first promised-only bars |
+| Mace: revert bars 1.07:1 in light forced colours | ADAPT (M7): CanvasText outline on revert bars and a CanvasText double edge on the hot row |
+| Cairo + Tufte: the slope mixes first credits with repeat credits | ADAPT (M7): each payout is run twice (first, then repeat) at 50 and 200 members. Repeat payouts cost 7,636 gas per member, first payouts 24,736. The repeat crossing is about 3,926 members; the old "1,482" is withdrawn |
+| Cairo: 1,482 against 1,483 | ADAPT (M7): one computed figure, printed once |
+| Cairo: hidden sends unchecked | ADAPT (M7): the build throws if a hidden setup call reverts |
+| Debord: About still says "five accounts" and "every transaction recorded" | ADAPT (M7): "five named accounts, plus as many more as a lesson needs"; "every listed transaction's …; unlisted setup calls are counted" |
+| Debord: transaction cap 10M while the page says 30M | ADAPT (M7): one constant, `BLOCK_GAS_LIMIT` = 30,000,000, used for blocks and transactions, named on the page and in About |
+| Debord: "whatever the size" measured at one size | ADAPT (M7): PullPayout measured at 1 and at 200 members (payout 43,451 and 26,351; claim 70,214 and 53,114) |
+| Debord: `/150` and `200 +` typed | ADAPT (M7): divisors come from the recorded member counts (`meta.members`) and setup counts |
+| Shklovsky: Terms push the revert below the fold | ADAPT (M7): Terms come after the run on example pages |
+| Krug: unlabelled KB figure | ADAPT (M7): reads "882 KB download" |
+| Krug: "01" heading wrap | ADAPT (M7): a flex heading keeps the number beside its title |
+| Papanek: grammar | ADAPT (M7) |
+
+**M7, Resolve R2 (ADAPT, batch).** Depends on: M6.
+- Residual diff:
+  - Unbounded figures re-measured: payout at 200 members, first round 4,115,537 and repeat 1,550,537; the crossing changed from 1,482 to 3,926.
+  - Transactions 491 → 494 (three new runs: two repeat payouts and the 1-member PullPayout payout).
+  - Gas figures elsewhere unchanged (`check.mjs` reproduces all 127 recorded steps).
+  - No regressions found by the probes (22 page-and-size checks clean; hero bottoms 527 and 793 px).

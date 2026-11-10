@@ -11,6 +11,7 @@ import { encodeFunctionData, decodeFunctionResult, encodeDeployData, decodeEvent
 export const ETH = 10n ** 18n;
 const GAS_PRICE = 10n; // wei per gas; fixed so balances are reproducible
 const START_BALANCE = 1000n * ETH;
+export const BLOCK_GAS_LIMIT = 30_000_000n; // one block; a transaction may use all of it
 const ACTORS = ['Alice', 'Bob', 'Carol', 'Dave', 'Mallory'];
 
 export class LocalChain {
@@ -63,7 +64,7 @@ export class LocalChain {
   block() {
     const n = this.blockNumber++;
     return Block.fromBlockData(
-      { header: { number: n, timestamp: 1_700_000_000n + n * 12n, gasLimit: 30_000_000n, baseFeePerGas: 7n } },
+      { header: { number: n, timestamp: 1_700_000_000n + n * 12n, gasLimit: BLOCK_GAS_LIMIT, baseFeePerGas: 7n } },
       { common: this.common },
     );
   }
@@ -72,7 +73,7 @@ export class LocalChain {
     const actor = this.actors[fromName];
     this.sent++;
     const tx = LegacyTransaction.fromTxData(
-      { nonce: actor.nonce++, gasPrice: GAS_PRICE, gasLimit: 10_000_000n, to, value, data },
+      { nonce: actor.nonce++, gasPrice: GAS_PRICE, gasLimit: BLOCK_GAS_LIMIT, to, value, data },
       { common: this.common },
     ).sign(actor.key);
     return this.vm.runTx({ tx, block: this.block(), skipBlockGasLimitValidation: true });

@@ -1,4 +1,5 @@
-// Lesson text. Every number is read from the recorded runs (r = runs[id].steps), never typed.
+// Lesson text. Every measured number is read from the recorded runs (r = runs[id].steps), never typed;
+// constants that are settings (the gas limit, the 20 gwei example price) are named where they are used.
 export const n = (x) => Number(x).toLocaleString('en-US');
 const step = (r, note) => {
   const s = r.find((x) => x.note === note);
@@ -21,6 +22,7 @@ export const TERMS = {
   EVM: 'The Ethereum Virtual Machine: the computer every Ethereum node runs, which executes contract code the same way everywhere.',
 };
 const ethOf = (wei) => `${Number(BigInt(wei)) / 1e18} ETH`;
+const LIMIT = 30_000_000; // BLOCK_GAS_LIMIT in chain.mjs
 
 export const PAGES = {
   basics: {
@@ -146,15 +148,20 @@ export const PAGES = {
       {
         id: 'unbounded',
         terms: ['gas'],
-        intro: () => '<code>payout()</code> loops over every member and writes to each one’s credit. Every <code>join()</code> makes the next payout more expensive, and a block has a gas limit (30,000,000 on the chain used here).',
+        intro: () => '<code>payout()</code> loops over every member and writes to each one’s credit. Every <code>join()</code> makes the next payout more expensive, and a block has a gas limit: 30,000,000 here, as on Ethereum mainnet today, and a single transaction can use at most one block.',
         after: (r) => {
-          const p = r.filter((x) => x.call === 'payout()' && x.to === 'Unbounded');
-          const last = p[p.length - 1], prev = p[p.length - 2];
-          const perMember = (last.gas - prev.gas) / 150;
-          const limit = Math.floor(200 + (30_000_000 - last.gas) / perMember);
-          const pull = r.find((x) => x.note === 'pull payout with 200 members');
-          const claim = r.find((x) => x.note === 'member 200 claims their share');
-          return `Each member here is a different account, as in real use. The payout cost <b>${n(p[0].gas)}</b> gas with 1 member and <b>${n(last.gas)}</b> with 200: about <b>${n(Math.round(perMember))}</b> more for every member who joins. At that rate a payout would pass the 30,000,000 block limit at roughly <b>${n(limit)}</b> members; from then on it could not run at all, and nobody would ever be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share: the payout cost <b>${n(pull.gas)}</b> gas with the same 200 members, and a claim <b>${n(claim.gas)}</b>, whatever the size of the list.`;
+          const pay = r.filter((x) => x.call === 'payout()' && x.to === 'Unbounded');
+          const first1 = pay.find((x) => x.meta.round === 'first' && x.meta.members === 1);
+          const reps = pay.filter((x) => x.meta.round === 'repeat');
+          const [ra, rb] = [reps[0], reps[reps.length - 1]];
+          const perRepeat = (rb.gas - ra.gas) / (rb.meta.members - ra.meta.members);
+          const firstBig = pay.filter((x) => x.meta.round === 'first').pop();
+          const newMembers = r.filter((x) => x.kind === 'setup').find((x) => x.note.includes(`to ${firstBig.meta.members} join`)).count;
+          const perNew = (firstBig.gas - rb.gas) / newMembers + perRepeat; // a new member costs the repeat write plus the zero-to-non-zero difference
+          const cross = Math.round(rb.meta.members + (LIMIT - rb.gas) / perRepeat);
+          const pulls = r.filter((x) => x.to === 'PullPayout' && x.meta);
+          const pp = (c, m) => pulls.find((x) => x.call === c && x.meta.members === m);
+          return `Every member here is a different account, as in real use. The payout cost <b>${n(first1.gas)}</b> gas with 1 member and <b>${n(rb.gas)}</b> for a repeat payout to ${n(rb.meta.members)}: about <b>${n(Math.round(perRepeat))}</b> gas more for every member (measured between ${n(ra.meta.members)} and ${n(rb.meta.members)}). A member’s first payout costs more, about <b>${n(Math.round(perNew))}</b>, because their credit goes from zero to non-zero. At the repeat rate, a payout would pass the ${n(LIMIT)}-gas block limit at roughly <b>${n(cross)}</b> members; from then on it could not run at all, and nobody would be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share. Its payout cost <b>${n(pp('payout()', 1).gas)}</b> gas with 1 member and <b>${n(pp('payout()', 200).gas)}</b> with 200 (the first round writes a fresh slot); a claim cost <b>${n(pp('claim()', 1).gas)}</b> for member 1 and <b>${n(pp('claim()', 200).gas)}</b> for member 200. The size of the list no longer matters.`;
         },
       },
     ],

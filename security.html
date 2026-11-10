@@ -229,7 +229,7 @@
 <section class="lesson" id="unbounded" aria-labelledby="h-unbounded">
   <h2 id="h-unbounded"><span class="num">04</span> Loops that grow</h2>
   <div class="lesson-grid">
-    <div class="prose"><p><code>payout()</code> loops over every member and writes to each one’s credit. Every <code>join()</code> makes the next payout more expensive, and a block has a gas limit (30,000,000 on the chain used here).</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>gas</dt><dd>The unit of work the network charges for. Every operation has a fixed gas cost; storing data is the expensive part.</dd></dl></aside></div>
+    <div class="prose"><p><code>payout()</code> loops over every member and writes to each one’s credit. Every <code>join()</code> makes the next payout more expensive, and a block has a gas limit: 30,000,000 here, as on Ethereum mainnet today, and a single transaction can use at most one block.</p><aside class="terms" aria-label="Terms used here"><h3>Terms</h3><dl><dt>gas</dt><dd>The unit of work the network charges for. Every operation has a fixed gas cost; storing data is the expensive part.</dd></dl></aside></div>
     <figure class="code"><figcaption><code>contracts/security/Unbounded.sol</code></figcaption><pre><code><span class="ln" style="--i:0"><span class="k">pragma</span> <span class="k">solidity</span> ^<span class="n">0</span>.<span class="n">8</span>.<span class="n">24</span>;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title An unbounded loop: every new member makes payout() cost more.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> Unbounded {</span><span class="ln" style="--i:4"><span class="t">address</span>[] <span class="k">public</span> members;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> credit;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> join() <span class="k">external</span> {</span><span class="ln" style="--i:8">members.push(msg.sender);</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> payout() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">for</span> (<span class="t">uint256</span> i = <span class="n">0</span>; i &lt; members.length; i++) {</span><span class="ln" style="--i:12">credit[members[i]] += <span class="n">1</span>;</span><span class="ln" style="--i:8">}</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:0"><span class="c">/// @title The fix: pay out by bookkeeping, and let each member pull their own share.</span></span><span class="ln" style="--i:0"><span class="c">/// payout() is one storage write however many members there are; claim() touches only the caller.</span></span><span class="ln" style="--i:0"><span class="k">contract</span> PullPayout {</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">bool</span>) <span class="k">public</span> isMember;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> claimedRounds;</span><span class="ln" style="--i:4"><span class="t">uint256</span> <span class="k">public</span> rounds;</span><span class="ln" style="--i:4"><span class="k">mapping</span>(<span class="t">address</span> =&gt; <span class="t">uint256</span>) <span class="k">public</span> credit;</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> join() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(!isMember[msg.sender], <span class="s">&quot;Already a member&quot;</span>);</span><span class="ln" style="--i:8">isMember[msg.sender] = true;</span><span class="ln" style="--i:8">claimedRounds[msg.sender] = rounds; <span class="c">// only rounds after joining count</span></span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> payout() <span class="k">external</span> {</span><span class="ln" style="--i:8">rounds += <span class="n">1</span>;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0"> </span><span class="ln" style="--i:4"><span class="k">function</span> claim() <span class="k">external</span> {</span><span class="ln" style="--i:8"><span class="k">require</span>(isMember[msg.sender], <span class="s">&quot;Not a member&quot;</span>);</span><span class="ln" style="--i:8">credit[msg.sender] += rounds - claimedRounds[msg.sender];</span><span class="ln" style="--i:8">claimedRounds[msg.sender] = rounds;</span><span class="ln" style="--i:4">}</span><span class="ln" style="--i:0">}</span></code></pre></figure>
   </div>
   <figure class="trace"><figcaption>What happened when it ran <span class="muted">· bars: transaction gas on one scale for every table on this page, zero to 4,115,537; deploys as numbers only · * read-only call: execution gas, not paid</span></figcaption>
@@ -244,26 +244,31 @@
       <td class="call"><code><span class="to">Unbounded.</span>join()</code></td>
       <td class="res"><span class="okc">ok</span></td>
       <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.6%"></span></span><span class="g">65,481</span></td></tr><tr class=" k-tx">
-      <td class="note">payout with 1 member</td>
+      <td class="note">first payout, 1 member</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,073</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 10 join (one join() each, not listed) · <b>9</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">payout with 10 members</td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,073</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 50 join (one join() each, not listed) · <b>49</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">payout with 50 members, some new</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:6.2%"></span></span><span class="g">253,597</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 11 to 50 join (one join() each, not listed) · <b>40</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">payout with 50 members</td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:30.2%"></span></span><span class="g">1,243,037</span></td></tr><tr class=" k-tx">
+      <td class="note">next payout, same 50 members</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:26.5%"></span></span><span class="g">1,089,137</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 51 to 200 join (one join() each, not listed) · <b>150</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">payout with 200 members</td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:9.8%"></span></span><span class="g">405,137</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 51 to 200 join (one join() each, not listed) · <b>150</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">payout with 200 members, some new</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">4,115,537</span></td></tr><tr class=" k-deploy">
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:100.0%"></span></span><span class="g">4,115,537</span></td></tr><tr class=" k-tx">
+      <td class="note">next payout, same 200 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">Unbounded.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:37.7%"></span></span><span class="g">1,550,537</span></td></tr><tr class=" k-deploy">
       <td class="note"></td>
       <td class="who">Alice deploys</td>
       <td class="call"><code>new PullPayout()</code></td>
@@ -273,28 +278,38 @@
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">PullPayout.</span>join()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,010</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 200 join (not listed) · <b>199</b> transactions</td></tr><tr class=" k-tx">
-      <td class="note">pull payout with 200 members</td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.2%"></span></span><span class="g">48,010</span></td></tr><tr class=" k-tx">
+      <td class="note">pull payout with 1 member</td>
       <td class="who">Alice →</td>
       <td class="call"><code><span class="to">PullPayout.</span>payout()</code></td>
       <td class="res"><span class="okc">ok</span></td>
       <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.1%"></span></span><span class="g">43,451</span></td></tr><tr class=" k-tx">
-      <td class="note">member 200 claims their share</td>
+      <td class="note">member 1 claims</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">PullPayout.</span>claim()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.7%"></span></span><span class="g">70,214</span></td></tr><tr class="k-setup"><td class="note" colspan="5">members 2 to 200 join (not listed) · <b>199</b> transactions</td></tr><tr class=" k-tx">
+      <td class="note">pull payout with 200 members</td>
+      <td class="who">Alice →</td>
+      <td class="call"><code><span class="to">PullPayout.</span>payout()</code></td>
+      <td class="res"><span class="okc">ok</span></td>
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:0.6%"></span></span><span class="g">26,351</span></td></tr><tr class=" k-tx">
+      <td class="note">member 200 claims</td>
       <td class="who">Member200 →</td>
       <td class="call"><code><span class="to">PullPayout.</span>claim()</code></td>
       <td class="res"><span class="okc">ok</span></td>
-      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.7%"></span></span><span class="g">70,214</span></td></tr><tr class=" k-read">
+      <td class="gas"><span class="track" aria-hidden="true"><span class="bar" style="--w:1.3%"></span></span><span class="g">53,114</span></td></tr><tr class=" k-read">
       <td class="note">member 200 is credited</td>
       <td class="who">read</td>
       <td class="call"><code><span class="to">PullPayout.</span>credit(Member200)</code></td>
       <td class="res"><span class="ret">1</span></td>
       <td class="gas"><span class="g g--exec" title="execution gas of a read-only call; no transaction, nobody pays">2,536*</span></td></tr></tbody></table></div></figure>
   
-  <p class="after"><strong>What it shows.</strong> Each member here is a different account, as in real use. The payout cost <b>48,073</b> gas with 1 member and <b>4,115,537</b> with 200: about <b>20,176</b> more for every member who joins. At that rate a payout would pass the 30,000,000 block limit at roughly <b>1,482</b> members; from then on it could not run at all, and nobody would ever be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share: the payout cost <b>43,451</b> gas with the same 200 members, and a claim <b>70,214</b>, whatever the size of the list.</p>
+  <p class="after"><strong>What it shows.</strong> Every member here is a different account, as in real use. The payout cost <b>48,073</b> gas with 1 member and <b>1,550,537</b> for a repeat payout to 200: about <b>7,636</b> gas more for every member (measured between 50 and 200). A member’s first payout costs more, about <b>24,736</b>, because their credit goes from zero to non-zero. At the repeat rate, a payout would pass the 30,000,000-gas block limit at roughly <b>3,926</b> members; from then on it could not run at all, and nobody would be credited again. Anyone can call <code>join()</code>, so anyone can push it there. The fix, <code>PullPayout</code>, counts payout rounds and lets each member claim their own share. Its payout cost <b>43,451</b> gas with 1 member and <b>26,351</b> with 200 (the first round writes a fresh slot); a claim cost <b>70,214</b> for member 1 and <b>53,114</b> for member 200. The size of the list no longer matters.</p>
 </section>
 </main>
 <footer class="foot">
-  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 491 transactions (93 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
+  <p>Every contract on this site was compiled with solc 0.8.28 and run in an in-memory EVM (EthereumJS, Cancun rules) when the site was built: 16 source files, 23 contracts, 494 transactions (96 listed on these pages; the rest are setup calls such as members joining, counted where they happen), 17 reverted on purpose. Run <code>cd tools &amp;&amp; npm ci &amp;&amp; npm run build</code> to reproduce every number. Nothing here is financial or security-audit advice.</p>
   <p>Free and open source, MIT licence. <a href="https://github.com/SolutionsAsService/LearnSolidity">Source on GitHub</a>.</p>
 </footer>
 

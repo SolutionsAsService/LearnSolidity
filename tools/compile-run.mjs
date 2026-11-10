@@ -61,10 +61,16 @@ export async function runAll(artifacts) {
         steps.push({ kind: 'deploy', note: `deploy ${alias}`, ...r, call: `new ${name}(${args.map((a) => chain.fmt(a)).join(', ')})` });
         if (!r.ok) throw new Error(`${sc.id}: deploy ${name} failed: ${r.error?.text}`);
       },
-      async send(from, alias, fn, args = [], value = 0n, note = null, hidden = false) {
+      async send(from, alias, fn, args = [], value = 0n, note = null, hidden = false, meta = null) {
         const r = await chain.send(from, alias, fn, args, value);
-        if (hidden) { t.hiddenCount++; return r; }
+        if (hidden) {
+          // an unlisted setup call must still succeed, or the counts it feeds are wrong
+          if (!r.ok) throw new Error(`${sc.id}: hidden ${fn}() by ${from} reverted: ${r.error && r.error.text}`);
+          t.hiddenCount++;
+          return r;
+        }
         const st = { kind: 'tx', note, ...r, valueText: value ? fmtEth(value) : null };
+        if (meta) st.meta = meta;
         if (t.track) st.state = await t.track(chain);
         steps.push(st);
         return r;

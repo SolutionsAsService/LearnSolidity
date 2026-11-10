@@ -4,8 +4,8 @@
  "totals": {
   "contracts": 23,
   "files": 16,
-  "tx": 491,
-  "listed": 93,
+  "tx": 494,
+  "listed": 96,
   "reverts": 17,
   "scenarios": 16
  },
@@ -1203,7 +1203,7 @@
     },
     {
      "kind": "tx",
-     "note": "payout with 1 member",
+     "note": "first payout, 1 member",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",
@@ -1212,43 +1212,50 @@
      "gas": 48073,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
+     "valueText": null,
+     "meta": {
+      "members": 1,
+      "round": "first"
+     }
     },
     {
      "kind": "setup",
-     "note": "members 2 to 10 join (one join() each, not listed)",
-     "count": 9
+     "note": "members 2 to 50 join (one join() each, not listed)",
+     "count": 49
     },
     {
      "kind": "tx",
-     "note": "payout with 10 members",
+     "note": "payout with 50 members, some new",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",
      "value": "0",
      "ok": true,
-     "gas": 253597,
+     "gas": 1243037,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
-    },
-    {
-     "kind": "setup",
-     "note": "members 11 to 50 join (one join() each, not listed)",
-     "count": 40
+     "valueText": null,
+     "meta": {
+      "members": 50,
+      "round": "first"
+     }
     },
     {
      "kind": "tx",
-     "note": "payout with 50 members",
+     "note": "next payout, same 50 members",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",
      "value": "0",
      "ok": true,
-     "gas": 1089137,
+     "gas": 405137,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
+     "valueText": null,
+     "meta": {
+      "members": 50,
+      "round": "repeat"
+     }
     },
     {
      "kind": "setup",
@@ -1257,7 +1264,7 @@
     },
     {
      "kind": "tx",
-     "note": "payout with 200 members",
+     "note": "payout with 200 members, some new",
      "from": "Alice",
      "to": "Unbounded",
      "call": "payout()",
@@ -1266,7 +1273,28 @@
      "gas": 4115537,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
+     "valueText": null,
+     "meta": {
+      "members": 200,
+      "round": "first"
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "next payout, same 200 members",
+     "from": "Alice",
+     "to": "Unbounded",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 1550537,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null,
+     "meta": {
+      "members": 200,
+      "round": "repeat"
+     }
     },
     {
      "kind": "deploy",
@@ -1279,7 +1307,7 @@
      "gas": 219076,
      "events": [],
      "eventsRaw": [],
-     "address": "0xf660e5ab1cf0ec7fb0b4cc1eace444a78f7d70f4"
+     "address": "0xcc4c548df31767a3da2d06dd6f7c4be112457e7e"
     },
     {
      "kind": "tx",
@@ -1295,6 +1323,38 @@
      "valueText": null
     },
     {
+     "kind": "tx",
+     "note": "pull payout with 1 member",
+     "from": "Alice",
+     "to": "PullPayout",
+     "call": "payout()",
+     "value": "0",
+     "ok": true,
+     "gas": 43451,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null,
+     "meta": {
+      "members": 1
+     }
+    },
+    {
+     "kind": "tx",
+     "note": "member 1 claims",
+     "from": "Alice",
+     "to": "PullPayout",
+     "call": "claim()",
+     "value": "0",
+     "ok": true,
+     "gas": 70214,
+     "events": [],
+     "eventsRaw": [],
+     "valueText": null,
+     "meta": {
+      "members": 1
+     }
+    },
+    {
      "kind": "setup",
      "note": "members 2 to 200 join (not listed)",
      "count": 199
@@ -1307,23 +1367,29 @@
      "call": "payout()",
      "value": "0",
      "ok": true,
-     "gas": 43451,
+     "gas": 26351,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
+     "valueText": null,
+     "meta": {
+      "members": 200
+     }
     },
     {
      "kind": "tx",
-     "note": "member 200 claims their share",
+     "note": "member 200 claims",
      "from": "Member200",
      "to": "PullPayout",
      "call": "claim()",
      "value": "0",
      "ok": true,
-     "gas": 70214,
+     "gas": 53114,
      "events": [],
      "eventsRaw": [],
-     "valueText": null
+     "valueText": null,
+     "meta": {
+      "members": 200
+     }
     },
     {
      "kind": "read",
@@ -1336,7 +1402,7 @@
     }
    ],
    "compare": null,
-   "sent": 408
+   "sent": 411
   },
   "voting": {
    "id": "voting",
